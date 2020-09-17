@@ -1,52 +1,47 @@
-# Prerequisites
-*.d
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# Key Properties File
+key.properties
 
-# Linker output
-*.ilk
-*.map
-*.exp
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
 
-# Precompiled Headers
-*.gch
-*.pch
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+# Web related
+lib/generated_plugin_registrant.dart
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+# Symbolication related
+app.*.symbols
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+# Obfuscation related
+app.*.map.json
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# Exceptions to above rules.
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
