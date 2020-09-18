@@ -20,9 +20,7 @@ class MyApp extends StatelessWidget {
           headline1: TextStyle(fontSize: 80.0, fontWeight: FontWeight.bold),
         ),
       ),
-      home: MyHomePage(
-          title: appName
-      ),
+      home: MyHomePage(title: appName),
     );
   }
 }
@@ -37,11 +35,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   void _aboutPage() {
     // When About Me button is pressed.
-    setState(() {
-    });
+    setState(() {});
   }
 
   @override
@@ -53,24 +49,40 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         centerTitle: true,
       ),
-      body: Center(
-        child: RaisedButton(
-          child: Text('About',
-            style: TextStyle(fontSize: 24)
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            height: 200.0,
           ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AboutRoute()
-              ),
-            );
-          }
-        ),
+          Align(
+            alignment: Alignment.center,
+            child: RaisedButton(
+              child: Text('About', style: TextStyle(fontSize: 24)),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutRoute()),
+                );
+              },
+            ),
+          ),
+          SizedBox(
+            height: 200.0,
+          ),
+          VerticalPadding(
+            color: Colors.white,
+            child: Text(
+              'Version 1.0',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15, fontFamily: 'Lato'),
+            ),
+          ),
+        ],
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
-
 
 class AboutRoute extends StatelessWidget {
   @override
@@ -81,50 +93,49 @@ class AboutRoute extends StatelessWidget {
             style: TextStyle(fontSize: 24, fontFamily: 'Lato')),
         centerTitle: true,
       ),
-
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children:[
+        children: [
           SizedBox(
             height: 10.0,
           ),
           VerticalPadding(
             color: Colors.yellow[50],
-            child: Text('Daniel Williams',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontFamily: 'Lato'),
+            child: Text(
+              'Daniel Williams',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 24, fontFamily: 'Lato'),
             ),
           ),
           VerticalPadding(
             color: Colors.yellow[50],
-            child: Text('Email: williams.dan@northeastern.edu',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+            child: Text(
+              'Email: williams.dan@northeastern.edu',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
             ),
           ),
           VerticalPadding(
             color: Colors.yellow[50],
-            child: Text('Starting Semester: ALIGN Spring 2019',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+            child: Text(
+              'Starting Semester: ALIGN Spring 2019',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
             ),
           ),
           Align(
             alignment: Alignment.center,
             child: Image.asset('assets/images/corporate_daniel_williams.jpg',
-              width: 300,
-              height: 300
-            ),
+                width: 300, height: 300),
           ),
           SizedBox(
             height: 30.0,
           ),
           Align(
-            alignment: Alignment.bottomCenter,
-            child: RaisedButton(
-              child: Text('Generate Error'),
-              onPressed: () => generateError(context))
-            ),
+              alignment: Alignment.bottomCenter,
+              child: RaisedButton(
+                  child: Text('Generate Error'),
+                  onPressed: () => generateError(context))),
         ],
       ),
     );
@@ -136,8 +147,8 @@ class VerticalPadding extends StatelessWidget {
 
   VerticalPadding({
     @required this.child,
-  this.padding = 16.0,
-  this.color = Colors.white,
+    this.padding = 16.0,
+    this.color = Colors.white,
   });
 
   final double padding;
@@ -149,32 +160,33 @@ class VerticalPadding extends StatelessWidget {
     return Container(
       color: color,
       padding: EdgeInsets.symmetric(vertical: padding),
-    child: child,
+      child: child,
     );
   }
 }
 
 void generateError(BuildContext context) {
-
   var alertDialog = AlertDialog(
-    title: Text("Error Generated!"),
-    content: Text("Shutting down app."),
-    actions:[
+    title: Text("Error Generated!",
+        textAlign: TextAlign.center),
+    content: Text("Please close the app.",
+        textAlign: TextAlign.center),
+    actions: [
       FlatButton(
-        child: Text("Close now.",
-          textAlign: TextAlign.center,
-        ),
-        onPressed: (){
-          exit(0);
-          // Navigator.of(context).pop();
-        }
-      )
+          child: Text(
+            "Close now.",
+            textAlign: TextAlign.center,
+          ),
+          onPressed: () {
+            exit(0);
+            // Navigator.of(context).pop();
+          })
     ],
   );
 
   showDialog(
-    context: context,
-    builder: (BuildContext context) {
-       return alertDialog;
-  });
+      context: context,
+      builder: (BuildContext context) {
+        return alertDialog;
+      });
 }
