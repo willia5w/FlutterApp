@@ -8,14 +8,21 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final appName = 'Daniel Williams';
+
     return MaterialApp(
-      title: 'Flutter Profile App',
+      title: appName,
       theme: ThemeData(
         primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        fontFamily: 'Lato',
+        textTheme: TextTheme(
+          headline1: TextStyle(fontSize: 80.0, fontWeight: FontWeight.bold),
+        ),
       ),
       home: MyHomePage(
-          title: 'Daniel Williams'),
+          title: appName
+      ),
     );
   }
 }
@@ -48,7 +55,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: RaisedButton(
-          child: Text('About'),
+          child: Text('About',
+            style: TextStyle(fontSize: 24)
+          ),
           onPressed: () {
             Navigator.push(
               context,
@@ -76,28 +85,38 @@ class AboutRoute extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children:[
           SizedBox(
-            height: 50.0,
+            height: 10.0,
           ),
           VerticalPadding(
             color: Colors.yellow[50],
-            child: Text('Daniel Williams', textAlign: TextAlign.center),
+            child: Text('Daniel Williams',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24),
+            ),
           ),
           VerticalPadding(
             color: Colors.yellow[50],
             child: Text('Email: williams.dan@northeastern.edu',
-                textAlign: TextAlign.center),
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20),
+            ),
           ),
           VerticalPadding(
             color: Colors.yellow[50],
             child: Text('Starting Semester: ALIGN Spring 2019',
-                textAlign: TextAlign.center),
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20),
+            ),
           ),
           Align(
             alignment: Alignment.center,
             child: Image.asset('assets/images/corporate_daniel_williams.jpg',
-              width: 200,
-              height: 200
+              width: 300,
+              height: 300
             ),
+          ),
+          SizedBox(
+            height: 30.0,
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -141,7 +160,9 @@ void generateError(BuildContext context) {
     content: Text("Shutting down app."),
     actions:[
       FlatButton(
-        child: Text("Close now."),
+        child: Text("Close now.",
+          textAlign: TextAlign.center,
+        ),
         onPressed: (){
           exit(0);
           // Navigator.of(context).pop();
