@@ -168,21 +168,25 @@ class VerticalPadding extends StatelessWidget {
 void generateError(BuildContext context) {
   var alertDialog = AlertDialog(
     title: Text("Error Generated!",
-        textAlign: TextAlign.center),
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
     content: Text("Please close the app.",
+        style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
         textAlign: TextAlign.center),
     actions: [
-      FlatButton(
+    Align(
+      alignment: Alignment.center,
+      child: FlatButton(
           child: Text(
             "Close now.",
             textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
           ),
           onPressed: () {
             exit(0);
-            // Navigator.of(context).pop();
           })
-    ],
-  );
+  ),
+  ]);
 
   showDialog(
       context: context,
