@@ -77,7 +77,8 @@ class AboutRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("About Me"),
+        title: Text("About Me",
+            style: TextStyle(fontSize: 24, fontFamily: 'Lato')),
         centerTitle: true,
       ),
 
@@ -91,21 +92,21 @@ class AboutRoute extends StatelessWidget {
             color: Colors.yellow[50],
             child: Text('Daniel Williams',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24),
+                style: TextStyle(fontSize: 24, fontFamily: 'Lato'),
             ),
           ),
           VerticalPadding(
             color: Colors.yellow[50],
             child: Text('Email: williams.dan@northeastern.edu',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
             ),
           ),
           VerticalPadding(
             color: Colors.yellow[50],
             child: Text('Starting Semester: ALIGN Spring 2019',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
             ),
           ),
           Align(
