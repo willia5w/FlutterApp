@@ -1,8 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:trotter/trotter.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:async' show Future;
 import 'dart:io';
+import 'trie.dart' as Trie;
 
 void main() {
   runApp(MyApp());
+
+  // Load wordlist into Trie
+  var t = new Trie.Trie();
+  t.addStrings(['one', 'two']);
+
+  print(t.contains('one'));
+  print(t.contains('three'));
+
+  final bagOfItems = characters('dan'), perms = Permutations(2, bagOfItems);
+  for (final perm in perms()) {
+    // Validate Regex
+    print(perm);
+  }
+
+}
+
+Future<String> loadAsset() async {
+  return await rootBundle.loadString('assets/textFiles/wordlist.tx');
+}
+
+void readFileByLines() {
+  File file = new File('assets/textFiles/wordlist.txt');
+
+  // async
+  file.readAsLines().then((lines) =>
+      lines.forEach((l) => print(l))
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +67,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   void _aboutPage() {
-    // When About Me button is pressed.
     setState(() {});
   }
 
@@ -53,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SizedBox(
-            height: 200.0,
+            height: 100.0,
           ),
           Align(
             alignment: Alignment.center,
@@ -67,19 +97,84 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
           ),
-          SizedBox(
-            height: 200.0,
+          Align(
+            alignment: Alignment.center,
+            child: RaisedButton(
+                child: Text('Generate Error', style: TextStyle(fontSize: 24)),
+                onPressed: () => generateError(context)),
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: RaisedButton(
+              child: Text('Dictionary', style: TextStyle(fontSize: 24)),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DictionaryRoute()),
+                );
+              },
+            ),
           ),
           VerticalPadding(
             color: Colors.white,
             child: Text(
-              'Version 1.0',
+              // Update to get version code from Android Manifest
+              'Version 2.0',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 15, fontFamily: 'Lato'),
             ),
           ),
         ],
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class DictionaryRoute extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Dictionary",
+            style: TextStyle(fontSize: 24, fontFamily: 'Lato')),
+        centerTitle: true,
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: RaisedButton(
+                child: Text('Load Dict', style: TextStyle(fontSize: 24)),
+                onPressed: () => readFileByLines()),
+          ),
+          SizedBox(
+            height: 15.0,
+          ),
+          TextField(
+            obscureText: false,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Available Letters:',
+            ),
+          ),
+          TextField(
+            obscureText: false,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Enter Pattern:',
+            ),
+          ),
+          TextField(
+            obscureText: false,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Number of Letters:',
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -131,11 +226,6 @@ class AboutRoute extends StatelessWidget {
           SizedBox(
             height: 30.0,
           ),
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: RaisedButton(
-                  child: Text('Generate Error'),
-                  onPressed: () => generateError(context))),
         ],
       ),
     );
@@ -167,26 +257,25 @@ class VerticalPadding extends StatelessWidget {
 
 void generateError(BuildContext context) {
   var alertDialog = AlertDialog(
-    title: Text("Error Generated!",
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
-    content: Text("Please close the app.",
-        style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
-        textAlign: TextAlign.center),
-    actions: [
-    Align(
-      alignment: Alignment.center,
-      child: FlatButton(
-          child: Text(
-            "Close now.",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
-          ),
-          onPressed: () {
-            exit(0);
-          })
-  ),
-  ]);
+      title: Text("Error Generated!",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
+      content: Text("Please close the app.",
+          style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+          textAlign: TextAlign.center),
+      actions: [
+        Align(
+            alignment: Alignment.center,
+            child: FlatButton(
+                child: Text(
+                  "Close now.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+                ),
+                onPressed: () {
+                  exit(0);
+                })),
+      ]);
 
   showDialog(
       context: context,
