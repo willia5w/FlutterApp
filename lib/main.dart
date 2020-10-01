@@ -1,40 +1,73 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:trotter/trotter.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
 import 'dart:async' show Future;
 import 'dart:io';
+import 'dart:convert';
+
 import 'trie.dart' as Trie;
+var t = new Trie.Trie();
 
 void main() {
   runApp(MyApp());
 
-  // Load wordlist into Trie
-  var t = new Trie.Trie();
-  t.addStrings(['one', 'two']);
+  // Get text file
+  // var file = File('test.txt');
+  // var contents;
+  // // Read file
+  // contents = file.readAsString();
+  // print(contents);
 
-  print(t.contains('one'));
-  print(t.contains('three'));
+  // Load wordlist into Trie
+  t.addStrings(['one', 'two']);
+  print(t.contains('one')); // Expected = True
 
   final bagOfItems = characters('dan'), perms = Permutations(2, bagOfItems);
   for (final perm in perms()) {
     // Validate Regex
     print(perm);
   }
-
 }
 
-Future<String> loadAsset() async {
-  return await rootBundle.loadString('assets/textFiles/wordlist.tx');
+
+// Reads words line-by-line into the Trie
+void readFileByLines() async {
+
+  // Adding file contents to Trie
+  LineSplitter.split(FileUtils.readFromFile().toString()).forEach((line) => t.addString('$line'));
+
+  print(await FileUtils.readFromFile().toString());
+
+  Future.delayed(const Duration(milliseconds: 400), () {
+    print(t.contains('three'));  // Expected = True
+  });
 }
 
-void readFileByLines() {
-  File file = new File('assets/textFiles/wordlist.txt');
+// Async File Opening and Reading Methods
+class FileUtils {
+  static Future<String> get getFilePath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
 
-  // async
-  file.readAsLines().then((lines) =>
-      lines.forEach((l) => print(l))
-  );
+  static Future<File> get getFile async {
+    final path = await getFilePath;
+    return File('$path/lib/test.txt');
+  }
+
+  static Future<String> readFromFile() async {
+    try {
+      final file = await getFile;
+      String fileContents = await file.readAsString();
+      return fileContents;
+    } catch (e) {
+      return "";
+    }
+  }
 }
+
 
 class MyApp extends StatelessWidget {
   @override
@@ -53,6 +86,30 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: appName),
     );
+  }
+}
+
+// Testing other option for opening file
+class Storage {
+  Future<String> get localPath async {
+    final dir = await getApplicationDocumentsDirectory();
+    return dir.path;
+  }
+
+  Future<File> get localFile async {
+    final path = await localPath;
+    return File('$path.assets/textFiles/wordlist.txt');
+  }
+
+  Future<String> readData() async {
+    try {
+      final file = await localFile;
+      String body = await file.readAsString();
+
+      return body;
+    } catch (e) {
+      return e.toString();
+    }
   }
 }
 
@@ -131,7 +188,6 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class DictionaryRoute extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,15 +200,15 @@ class DictionaryRoute extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Align(
-            alignment: Alignment.center,
-            child: RaisedButton(
-                child: Text('Load Dict', style: TextStyle(fontSize: 24)),
-                onPressed: () => readFileByLines()),
-          ),
+              alignment: Alignment.center,
+              child: RaisedButton(
+                  child: Text('Load Dict', style: TextStyle(fontSize: 24)),
+                  onPressed: () => readFileByLines())),
           SizedBox(
             height: 15.0,
           ),
           TextField(
+            // TODO: Feed letters into Permutations() method
             obscureText: false,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
@@ -160,6 +216,7 @@ class DictionaryRoute extends StatelessWidget {
             ),
           ),
           TextField(
+            // TODO: Filter Permut
             obscureText: false,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
@@ -167,6 +224,7 @@ class DictionaryRoute extends StatelessWidget {
             ),
           ),
           TextField(
+            // TODO: Feed length into Permutations() method
             obscureText: false,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
