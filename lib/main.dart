@@ -1,72 +1,52 @@
 
 
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:trotter/trotter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async' show Future;
 import 'dart:io';
-import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
 
 import 'trie.dart' as Trie;
 var t = new Trie.Trie();
 
 void main() {
   runApp(MyApp());
-
-  // Get text file
-  // var file = File('test.txt');
-  // var contents;
-  // // Read file
-  // contents = file.readAsString();
-  // print(contents);
-
-  // Load wordlist into Trie
-  t.addStrings(['one', 'two']);
-  print(t.contains('one')); // Expected = True
-
-  final bagOfItems = characters('dan'), perms = Permutations(2, bagOfItems);
-  for (final perm in perms()) {
-    // Validate Regex
-    print(perm);
-  }
+  loadAsset().then((value) => print(value));
 }
 
+Future<String> loadAsset() async {
+  return await rootBundle.loadString('assets/textFiles/test.txt');
+}
 
 // Reads words line-by-line into the Trie
-void readFileByLines() async {
-
-  // Adding file contents to Trie
-  LineSplitter.split(FileUtils.readFromFile().toString()).forEach((line) => t.addString('$line'));
-
-  print(await FileUtils.readFromFile().toString());
-
-  Future.delayed(const Duration(milliseconds: 400), () {
-    print(t.contains('three'));  // Expected = True
-  });
+void testingTrie() {
+  print(t.contains('line 2'));
 }
 
-// Async File Opening and Reading Methods
-class FileUtils {
-  static Future<String> get getFilePath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
-  }
-
-  static Future<File> get getFile async {
-    final path = await getFilePath;
-    return File('$path/lib/test.txt');
-  }
-
-  static Future<String> readFromFile() async {
-    try {
-      final file = await getFile;
-      String fileContents = await file.readAsString();
-      return fileContents;
-    } catch (e) {
-      return "";
-    }
-  }
+// TODO: Take int as agument to validate permuatitons prior to checking Trie
+ void getPermutations(String letters) {
+// void getPermutations(String letters, int length, String pattern) {
+//   // TODO: Create substring validation
+//   // for i = 0 to lnegth :
+//     // if perm.subString(i) == pattern.charAt(i) && pattern.subString(i) != "_"
+//     //letterSet.add(Perm);
+//   // LinkedHashSet letterSet = new LinkedHashSet();
+//   // final bagOfItems = characters(letters), perms = Permutations(length, bagOfItems);
+//   // for (final perm in perms()) {
+//     // TODO Validate Regex
+//     for (int i = 0; i < length; i++) {
+//       if (perm.subString(i) == pattern.substring(i, [i]) && pattern.substring(i, [i]) != "_") {
+//         letterSet.add(perm);
+//       }
+//     }
+//     print(perm);
+//   }
 }
+
+
 
 
 class MyApp extends StatelessWidget {
@@ -89,29 +69,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Testing other option for opening file
-class Storage {
-  Future<String> get localPath async {
-    final dir = await getApplicationDocumentsDirectory();
-    return dir.path;
-  }
-
-  Future<File> get localFile async {
-    final path = await localPath;
-    return File('$path.assets/textFiles/wordlist.txt');
-  }
-
-  Future<String> readData() async {
-    try {
-      final file = await localFile;
-      String body = await file.readAsString();
-
-      return body;
-    } catch (e) {
-      return e.toString();
-    }
-  }
-}
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -188,6 +145,10 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class DictionaryRoute extends StatelessWidget {
+  String availableLetters;
+  String inputPattern;
+  int numLetters;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -203,7 +164,7 @@ class DictionaryRoute extends StatelessWidget {
               alignment: Alignment.center,
               child: RaisedButton(
                   child: Text('Load Dict', style: TextStyle(fontSize: 24)),
-                  onPressed: () => readFileByLines())),
+                  onPressed: () => testingTrie())),
           SizedBox(
             height: 15.0,
           ),
@@ -214,14 +175,20 @@ class DictionaryRoute extends StatelessWidget {
               border: OutlineInputBorder(),
               labelText: 'Available Letters:',
             ),
+            onChanged: (val) {
+              availableLetters = val;
+            },
           ),
           TextField(
-            // TODO: Filter Permut
+            // TODO: Filter Permutations to match char at substruing location
             obscureText: false,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Enter Pattern:',
             ),
+            onChanged: (val) {
+              inputPattern = val;
+            },
           ),
           TextField(
             // TODO: Feed length into Permutations() method
@@ -230,6 +197,21 @@ class DictionaryRoute extends StatelessWidget {
               border: OutlineInputBorder(),
               labelText: 'Number of Letters:',
             ),
+            onChanged: (val) {
+              numLetters = int.parse(val);
+            },
+          ),
+          // TODO: Pass letters, pattern, length
+          Row(
+            textDirection: TextDirection.rtl,
+            children: <Widget>[
+              FlatButton(
+                child: Text('submit'),
+                onPressed: () {
+
+
+                }),
+            ],
           ),
         ],
       ),
