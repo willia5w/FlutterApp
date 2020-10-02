@@ -1,16 +1,21 @@
 
+import 'dart:collection';
 
-// import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'dart:async' show Future;
 import 'dart:io';
 import 'package:flutter/services.dart' show rootBundle;
-
+import 'package:trotter/trotter.dart';
 import 'trie.dart' as Trie;
 var t = new Trie.Trie();
 
+// DictionarySingleton dictionarySingleton;
+
 void main() {
   runApp(MyApp());
+
+  // Get singleton instance
+  // dictionarySingleton = DictionarySingleton.instance;
 }
 
 Future<String> loadAsset() async {
@@ -22,28 +27,44 @@ void testingTrie() {
   print(t.contains('zebra'));
 }
 
-// TODO: Take int as agument to validate permuatitons prior to checking Trie
- void getPermutations(String letters) {
-// void getPermutations(String letters, int length, String pattern) {
-//   // TODO: Create substring validation
-//   // for i = 0 to lnegth :
-//     // if perm.subString(i) == pattern.charAt(i) && pattern.subString(i) != "_"
-//     //letterSet.add(Perm);
-//   // LinkedHashSet letterSet = new LinkedHashSet();
-//   // final bagOfItems = characters(letters), perms = Permutations(length, bagOfItems);
-//   // for (final perm in perms()) {
-//     // TODO Validate Regex
-//     for (int i = 0; i < length; i++) {
-//       if (perm.subString(i) == pattern.substring(i, [i]) && pattern.substring(i, [i]) != "_") {
-//         letterSet.add(perm);
-//       }
-//     }
-//     print(perm);
-//   }
+// class Dictionary() {
+//   var t = new Trie.Trie();
+// }
+
+
+// class DictionarySingleton  {
+//   Dictionary dictionary = new Dictionary();
+//   DictionarySingleton._privateConstructor();
+// @override
+// void initState() {
+//   super.initState(BuildContext contex);
+//
+//   });
+// }
+//   static final DictionarySingleton instance = DictionarySingleton._privateConstructor();
+// }
+
+
+void getPermutations(String letters, int length, String pattern) {
+  // TODO: Create substring validation
+  LinkedHashSet letterSet = new LinkedHashSet();
+
+  // TODO: PERMUTATIONS does not accept duplicate letters, finad alternative method
+  final bagOfItems = characters(letters), perms = Permutations(length, bagOfItems);
+
+  for (final perm in perms()) {  // For string in list of strings
+    String p = perm.join(', ');
+    for (int i = 0; i < length; i++) {
+      // TODO: Logic flawed and taking too long
+          if (p.substring(i, i) == pattern.substring(i, i+1) && i == length-1 || pattern.substring(i, i+1) != "_") {
+            if (t.contains(p)) {
+              letterSet.add(p);
+              print(p);
+            }
+          }
+    }
+  }
 }
-
-
-
 
 class MyApp extends StatelessWidget {
   @override
@@ -77,31 +98,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
   List<String> words = new List<String>();
-  // Load on start
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // await loadAsset();
-      //loadAsset().then((value) => print(value));
       final String wordList = await loadAsset();
-      //t.addStrings(wordList.split(""));
       setState(() {
         words = wordList.split("\n");
       });
       await words.forEach((element) {t.addString(element);});
-
-      print(words.contains('allotelluric'));
-      print(t.contains('allotelluric'));
-      // loadAsset().then((value) => print(value));
     });
   }
 
   void _aboutPage() {
     setState(() {});
   }
-
 
 
   @override
@@ -165,9 +179,9 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class DictionaryRoute extends StatelessWidget {
-  String availableLetters;
-  String inputPattern;
-  int numLetters;
+  String availableLetters = 'all';
+  String inputPattern = '_ll';
+  int numLetters = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +203,6 @@ class DictionaryRoute extends StatelessWidget {
             height: 15.0,
           ),
           TextField(
-            // TODO: Feed letters into Permutations() method
             obscureText: false,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
@@ -200,7 +213,6 @@ class DictionaryRoute extends StatelessWidget {
             },
           ),
           TextField(
-            // TODO: Filter Permutations to match char at substruing location
             obscureText: false,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
@@ -211,7 +223,6 @@ class DictionaryRoute extends StatelessWidget {
             },
           ),
           TextField(
-            // TODO: Feed length into Permutations() method
             obscureText: false,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
@@ -228,11 +239,14 @@ class DictionaryRoute extends StatelessWidget {
               FlatButton(
                 child: Text('submit'),
                 onPressed: () {
-
-
+                  // TODO: VALIDATE letters.length length/pattern.length
+                  // dictionarySingleton
+                  print('working...');
+                  getPermutations(availableLetters, numLetters, inputPattern);
                 }),
             ],
           ),
+          // TODO: BUILD LISTVIEW TO READ TRIE MATCHES FROM PERMUTATIONS()
         ],
       ),
     );
