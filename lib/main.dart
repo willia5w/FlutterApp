@@ -1,10 +1,7 @@
 
 
-import 'dart:collection';
-
+// import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:trotter/trotter.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:async' show Future;
 import 'dart:io';
 import 'package:flutter/services.dart' show rootBundle;
@@ -14,16 +11,15 @@ var t = new Trie.Trie();
 
 void main() {
   runApp(MyApp());
-  loadAsset().then((value) => print(value));
 }
 
 Future<String> loadAsset() async {
-  return await rootBundle.loadString('assets/textFiles/test.txt');
+  return await rootBundle.loadString('assets/textFiles/wordlist.txt');
 }
 
 // Reads words line-by-line into the Trie
 void testingTrie() {
-  print(t.contains('line 2'));
+  print(t.contains('zebra'));
 }
 
 // TODO: Take int as agument to validate permuatitons prior to checking Trie
@@ -75,14 +71,38 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
 
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<String> words = new List<String>();
+  // Load on start
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // await loadAsset();
+      //loadAsset().then((value) => print(value));
+      final String wordList = await loadAsset();
+      //t.addStrings(wordList.split(""));
+      setState(() {
+        words = wordList.split("\n");
+      });
+      await words.forEach((element) {t.addString(element);});
+
+      print(words.contains('allotelluric'));
+      print(t.contains('allotelluric'));
+      // loadAsset().then((value) => print(value));
+    });
+  }
+
   void _aboutPage() {
     setState(() {});
   }
+
+
 
   @override
   Widget build(BuildContext context) {

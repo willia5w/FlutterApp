@@ -26,7 +26,6 @@ class TrieNode {
   TrieNode parent;
   List<TrieNode> childs = [];
 
-
   TrieNode.root();
 
   TrieNode(this.currentChar, this.parent);
