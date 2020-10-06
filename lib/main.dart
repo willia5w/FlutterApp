@@ -34,7 +34,21 @@ Future<String> loadAsset() async {
 // void initState() {
 //   super.initState(BuildContext contex);
 //
-//   });
+//   });//   var t = new Trie.Trie();
+// // }
+//
+//
+// // class DictionarySingleton  {
+// //   Dictionary dictionary = new Dictionary();
+// //   DictionarySingleton._privateConstructor();
+// // @override
+// // void initState() {
+// //   super.initState(BuildContext contex);
+// //
+// //   });
+// // }
+// //   static final DictionarySingleton instance = DictionarySingleton._privateConstructor();
+// // }
 // }
 //   static final DictionarySingleton instance = DictionarySingleton._privateConstructor();
 // }
@@ -51,30 +65,44 @@ void getPermutations(String letters, int length, String pattern) {
   final unique = chars.where((str) => seen.add(str)).toList();
   final uniqueLetters = unique.join();
 
-  final bagOfItems = characters(uniqueLetters), perms = Amalgams(length, bagOfItems);
+  final bagOfItems = characters(uniqueLetters), items = Amalgams(length, bagOfItems);
 
-  // TODO: Should only accept 3 letter words ending in "_ll"
-  for (final perm in perms()) {  // For string in list of strings
-    String p = perm.join();
+
+  List<String> perms = new List<String>();
+  for (final item in items()) {
+    perms.add(item.join());
+  }
+
+  for (int j = 0; j< perms.length; j++) {  // For string in list of strings
+    String perm = perms[j];
     for (int i = 0; i < length; i++) {
-          // Skip check of letter occurence vs input of "_" wildcard
-          if (checkPosition(p, pattern, i)) {
-            // Count of each letter in permuation must match count in input string
-            // print(p);
-            // Make sure the count of the letter
-            if (p.substring(i, i+1).allMatches(letters).length == p.substring(i, i+1).allMatches(pattern).length) {
-              if (t.contains(p)) {
-                letterSet.add(p);
-                print(p);
-              }
+      // If num occurences of this letter matches, _ll
+      // d
+      if (pattern.substring(i, i + 1) != "_") {
+        // Skip check of letter occurence vs input of "_" wildcard
+        if (perm.substring(i, i+1) == pattern.substring(i, i+1)) {
+          print(i);
+          if (checkPosition(perm, pattern, letters, i)) {
+            if (t.contains(perm)) {
+              perms.remove(perm);
+              letterSet.add(perm);
             }
           }
+        }
+        // Catch "llb"
+        perms.remove(perm);
+      }
     }
   }
+  print(letterSet);
+  print(perms);
 }
 
-bool checkPosition(String perm, String pattern, int pos) {
-  return(perm.substring(pos, pos+1) == pattern.substring(pos, pos+1));
+bool checkPosition(String perm, String pattern, String letters, int pos) {
+  if (perm.substring(pos, pos+1).allMatches(perm).length == perm.substring(pos, pos+1).allMatches(pattern).length) {
+    return true;
+  }
+  return false;
 }
 
 
@@ -246,7 +274,7 @@ class DictionaryRoute extends StatelessWidget {
               FlatButton(
                 child: Text('submit'),
                 onPressed: () {
-                  // TODO: VALIDATE letters.length length/pattern.length
+                  // TODO: VALIDATE letters.length length/pattern.length else no not accept
                   // dictionarySingleton
                   getPermutations(availableLetters, numLetters, inputPattern);
                 }),
