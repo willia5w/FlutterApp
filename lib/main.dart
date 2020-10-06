@@ -22,11 +22,6 @@ Future<String> loadAsset() async {
   return await rootBundle.loadString('assets/textFiles/wordlist.txt');
 }
 
-// Reads words line-by-line into the Trie
-void testingTrie() {
-  print(t.contains('zebra'));
-}
-
 // class Dictionary() {
 //   var t = new Trie.Trie();
 // }
@@ -46,25 +41,42 @@ void testingTrie() {
 
 
 void getPermutations(String letters, int length, String pattern) {
-  // TODO: Create substring validation
+
+  // Stores matches
   LinkedHashSet letterSet = new LinkedHashSet();
 
-  // TODO: PERMUTATIONS does not accept duplicate letters, finad alternative method
-  final bagOfItems = characters(letters), perms = Permutations(length, bagOfItems);
+  // Get unique chars from input
+  List<String> chars = letters.split("");
+  final seen = Set<String>();
+  final unique = chars.where((str) => seen.add(str)).toList();
+  final uniqueLetters = unique.join();
 
+  final bagOfItems = characters(uniqueLetters), perms = Amalgams(length, bagOfItems);
+
+  // TODO: Should only accept 3 letter words ending in "_ll"
   for (final perm in perms()) {  // For string in list of strings
-    String p = perm.join(', ');
+    String p = perm.join();
     for (int i = 0; i < length; i++) {
-      // TODO: Logic flawed and taking too long
-          if (p.substring(i, i) == pattern.substring(i, i+1) && i == length-1 || pattern.substring(i, i+1) != "_") {
-            if (t.contains(p)) {
-              letterSet.add(p);
-              print(p);
+          // Skip check of letter occurence vs input of "_" wildcard
+          if (checkPosition(p, pattern, i)) {
+            // Count of each letter in permuation must match count in input string
+            // print(p);
+            // Make sure the count of the letter
+            if (p.substring(i, i+1).allMatches(letters).length == p.substring(i, i+1).allMatches(pattern).length) {
+              if (t.contains(p)) {
+                letterSet.add(p);
+                print(p);
+              }
             }
           }
     }
   }
 }
+
+bool checkPosition(String perm, String pattern, int pos) {
+  return(perm.substring(pos, pos+1) == pattern.substring(pos, pos+1));
+}
+
 
 class MyApp extends StatelessWidget {
   @override
@@ -179,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class DictionaryRoute extends StatelessWidget {
-  String availableLetters = 'all';
+  String availableLetters = 'ahasdfvbjhsdll';
   String inputPattern = '_ll';
   int numLetters = 3;
 
@@ -194,11 +206,6 @@ class DictionaryRoute extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Align(
-              alignment: Alignment.center,
-              child: RaisedButton(
-                  child: Text('Load Dict', style: TextStyle(fontSize: 24)),
-                  onPressed: () => testingTrie())),
           SizedBox(
             height: 15.0,
           ),
@@ -241,7 +248,6 @@ class DictionaryRoute extends StatelessWidget {
                 onPressed: () {
                   // TODO: VALIDATE letters.length length/pattern.length
                   // dictionarySingleton
-                  print('working...');
                   getPermutations(availableLetters, numLetters, inputPattern);
                 }),
             ],
