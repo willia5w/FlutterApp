@@ -1,9 +1,9 @@
-import 'dart:collection';
-
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:async' show Future;
 import 'dart:io';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:trotter/trotter.dart';
 import 'trie.dart' as Trie;
 
@@ -13,7 +13,6 @@ String elapsedTime = "0";
 
 void main() {
   runApp(MyApp());
-
 }
 
 Future<String> loadAsset() async {
@@ -49,23 +48,32 @@ List<String> getPermutations(String letters, int length, String pattern) {
           // If count of occurences for this letter doesnt match occurences in the pattern then skip
           if (checkOccurences(perm, pattern, letters, i)) {
             if (t.contains(perm)) {
-                  letterSet.add(perm);
-              }
+              letterSet.add(perm);
+            }
           }
         }
       }
     }
   }
-  print(letterSet);
   return letterSet;
 }
 
 bool checkOccurences(String perm, String pattern, String letters, int pos) {
   String letter = perm.substring(pos, pos + 1);
-  if (letter.allMatches(perm).length  // # occurences of this letter in the permutation
-      == letter.allMatches(pattern).length // # occurences of this letter in the pattern
-      && letter.allMatches(perm).length // # occurences of this letter in the permutation
-        == letter.allMatches(letters).length) { // # occurences of this letter in the input string
+  if (letter
+              .allMatches(perm)
+              .length // # occurences of this letter in the permutation
+          ==
+          letter
+              .allMatches(pattern)
+              .length // # occurences of this letter in the pattern
+      &&
+      letter
+              .allMatches(perm)
+              .length // # occurences of this letter in the permutation
+          ==
+          letter.allMatches(letters).length) {
+    // # occurences of this letter in the input string
     return true;
   }
   return false;
@@ -170,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
             color: Colors.white,
             child: Text(
               // Update to get version code from Android Manifest
-              'Version 2.0',
+              'Version 3.0',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 15, fontFamily: 'Lato'),
             ),
@@ -182,19 +190,12 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class DictionaryRoute extends StatefulWidget {
-
   @override
   _DictionaryRouteState createState() => _DictionaryRouteState();
 }
 
 final _text = TextEditingController();
 bool _validate = false;
-
-// @override
-// void dispose() {
-//   _text.dispose();
-//   super.dispose();
-// }
 
 class _DictionaryRouteState extends State<DictionaryRoute> {
   String time = "0";
@@ -212,7 +213,7 @@ class _DictionaryRouteState extends State<DictionaryRoute> {
 
   final clearLengthField = TextEditingController();
 
-  clearTextInput(){
+  clearTextInput() {
     clearLettersField.clear();
     clearPatternField.clear();
     clearLengthField.clear();
@@ -288,45 +289,129 @@ class _DictionaryRouteState extends State<DictionaryRoute> {
               textDirection: TextDirection.rtl,
               children: <Widget>[
                 SizedBox(
-                  child: Text('$time'+ "ms"),
+                  child: Text('$time' + "ms"),
                 ),
                 FlatButton(
                     child: Text('LOOKUP'),
                     onPressed: () {
-                      if (numLetters != inputPattern.length || availableLetters == "") {
+                      if (numLetters != inputPattern.length ||
+                          availableLetters == "" || !RegExp(r'^[a-zA-Z]*$').hasMatch(availableLetters)) {
                         generateLengthError(context);
                       } else {
-                          stopwatch.start();
-                          words = getPermutations(
-                              availableLetters, numLetters, inputPattern);
-                          stopwatch.stop();
-                          elapsedTime = stopwatch.elapsedMilliseconds.toString();
-                          stopwatch.reset();
-                          changeText();
+                        stopwatch.start();
+                        words = getPermutations(
+                            availableLetters, numLetters, inputPattern);
+                        stopwatch.stop();
+                        elapsedTime = stopwatch.elapsedMilliseconds.toString();
+                        stopwatch.reset();
+                        if (words.length == 0) {
+                          words.add("No results");
                         }
-                }),
+                        changeText();
+                      }
+                    }),
                 FlatButton(
-                    child: Text('CLEAR'),
-                    onPressed: clearTextInput,
+                  child: Text('CLEAR'),
+                  onPressed: clearTextInput,
                 ),
               ],
             ),
             Expanded(
-                child: ListView.separated(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: words.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    // return Text('${words[index]}');
-                    return ListTile(
-                      title: Text('${words[index]}'),
+              child: ListView.separated(
+                padding: const EdgeInsets.all(8),
+                itemCount: words.length,
+                itemBuilder: (BuildContext context, int index) {
+                  // return Text('${words[index]}');
+                  return ListTile(
+                    title: Text('${words[index]}'),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) =>
+                    const Divider(),
+              ),
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: RaisedButton(
+                  child: Text('Acknowledgements', style: TextStyle(fontSize: 18)),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AcknowledgementsRoute()),
                     );
                   },
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(),
                 ),
+              ),
             ),
           ],
         ));
+  }
+}
+
+class AcknowledgementsRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Acknowledgements",
+            style: TextStyle(fontSize: 24, fontFamily: 'Lato')),
+        centerTitle: true,
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            height: 10.0,
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: VerticalPadding(
+              color: Colors.yellow[50],
+              child: new RichText(
+                text: new TextSpan(
+                  children: [
+                    new TextSpan(
+                      text: 'GitHub: Trie\n\n',
+                      style: new TextStyle(color: Colors.blue, fontSize: 24, fontFamily: 'Lato'),
+                      recognizer: new TapGestureRecognizer()
+                        ..onTap = () {
+                          _launchURL('https://github.com/joshy/trie.dart');
+                        },
+                    ),
+                    new TextSpan(
+                      text: 'Trotter: Permutations()',
+                      style: new TextStyle(color: Colors.blue, fontSize: 24, fontFamily: 'Lato'),
+                      recognizer: new TapGestureRecognizer()
+                        ..onTap = () {
+                          _launchURL('https://pub.dev/packages/trotter');
+                        },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 30.0,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Catches url launcher exceptions
+_launchURL(url) async {
+  try{
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+  catch(e){
   }
 }
 
@@ -336,9 +421,6 @@ void showRuntime(BuildContext context) {
     title: Text("Runtime: " + "$elapsedTime" + "ms",
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
-    // content: Text("Try Again",
-    //     style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
-    //     textAlign: TextAlign.center),
   );
 
   showDialog(
@@ -351,17 +433,18 @@ void showRuntime(BuildContext context) {
       });
 }
 
-
 void generateLengthError(BuildContext context) {
   var alertDialog = AlertDialog(
-      title: Text("Number of letters must match pattern length.\n\n "
-          "Available letters cannot be blank.",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
-      content: Text("Try Again",
-          style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
-          textAlign: TextAlign.center),
-      );
+    title: Text(
+        "Number of letters must match pattern length.\n\n "
+        "Available letters cannot be blank.\n\n"
+            "Only letters accepted as input.",
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
+    content: Text("Try Again",
+        style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+        textAlign: TextAlign.center),
+  );
 
   showDialog(
       context: context,
@@ -369,8 +452,8 @@ void generateLengthError(BuildContext context) {
         Future.delayed(Duration(seconds: 2), () {
           Navigator.of(context).pop(true);
         });
-          return alertDialog;
-        });
+        return alertDialog;
+      });
 }
 
 class AboutRoute extends StatelessWidget {
