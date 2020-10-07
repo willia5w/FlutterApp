@@ -1,4 +1,3 @@
-
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'dart:io';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:trotter/trotter.dart';
 import 'trie.dart' as Trie;
+
 var t = new Trie.Trie();
 
 // DictionarySingleton dictionarySingleton;
@@ -25,7 +25,6 @@ Future<String> loadAsset() async {
 // class Dictionary() {
 //   var t = new Trie.Trie();
 // }
-
 
 // class DictionarySingleton  {
 //   Dictionary dictionary = new Dictionary();
@@ -53,11 +52,9 @@ Future<String> loadAsset() async {
 //   static final DictionarySingleton instance = DictionarySingleton._privateConstructor();
 // }
 
-
-void getPermutations(String letters, int length, String pattern) {
-
+List<String> getPermutations(String letters, int length, String pattern) {
   // Stores matches
-  LinkedHashSet letterSet = new LinkedHashSet();
+  List<String> letterSet = new List<String>();
 
   // Get unique chars from input
   List<String> chars = letters.split("");
@@ -65,46 +62,48 @@ void getPermutations(String letters, int length, String pattern) {
   final unique = chars.where((str) => seen.add(str)).toList();
   final uniqueLetters = unique.join();
 
-  final bagOfItems = characters(uniqueLetters), items = Amalgams(length, bagOfItems);
-
+  final bagOfItems = characters(uniqueLetters),
+      items = Amalgams(length, bagOfItems);
 
   List<String> perms = new List<String>();
   for (final item in items()) {
     perms.add(item.join());
   }
 
-  for (int j = 0; j< perms.length; j++) {  // For string in list of strings
+  for (int j = 0; j < perms.length; j++) {
+    // For string in list of strings
     String perm = perms[j];
     for (int i = 0; i < length; i++) {
-      // If num occurences of this letter matches, _ll
-      // d
+      // Check match letter by letter
       if (pattern.substring(i, i + 1) != "_") {
-        // Skip check of letter occurence vs input of "_" wildcard
-        if (perm.substring(i, i+1) == pattern.substring(i, i+1)) {
-          print(i);
+        if (perm.substring(i, i + 1) == pattern.substring(i, i + 1)) {
           if (checkPosition(perm, pattern, letters, i)) {
-            if (t.contains(perm)) {
-              perms.remove(perm);
+            if (i == length - 1 && perm.substring(i) == pattern.substring(i)) {
+              if (t.contains(perm)) {
+                letterSet.add(perm);
+                // perms.remove(perm);
+              }
+            } else if (t.contains(perm)) {
               letterSet.add(perm);
+              // perms.remove(perm);
             }
           }
         }
-        // Catch "llb"
-        perms.remove(perm);
+        // perms.remove(perm);
       }
     }
   }
   print(letterSet);
-  print(perms);
+  return letterSet;
 }
 
 bool checkPosition(String perm, String pattern, String letters, int pos) {
-  if (perm.substring(pos, pos+1).allMatches(perm).length == perm.substring(pos, pos+1).allMatches(pattern).length) {
+  if (perm.substring(pos, pos + 1).allMatches(perm).length ==
+      perm.substring(pos, pos + 1).allMatches(pattern).length) {
     return true;
   }
   return false;
 }
-
 
 class MyApp extends StatelessWidget {
   @override
@@ -126,19 +125,16 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
-
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   List<String> words = new List<String>();
 
   @override
@@ -149,14 +145,15 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         words = wordList.split("\n");
       });
-      await words.forEach((element) {t.addString(element);});
+      await words.forEach((element) {
+        t.addString(element);
+      });
     });
   }
 
   void _aboutPage() {
     setState(() {});
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -219,73 +216,110 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class DictionaryRoute extends StatelessWidget {
-  String availableLetters = 'ahasdfvbjhsdll';
-  String inputPattern = '_ll';
-  int numLetters = 3;
+  List<String> words = List<String>();
+  String availableLetters = '';
+  String inputPattern = '';
+  int numLetters = 0;
+
+  final clearLettersField = TextEditingController();
+  final clearPatternField = TextEditingController();
+  final clearLengthField = TextEditingController();
+
+  clearTextInput(){
+    clearLettersField.clear();
+    clearPatternField.clear();
+    clearLengthField.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Dictionary",
-            style: TextStyle(fontSize: 24, fontFamily: 'Lato')),
-        centerTitle: true,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            height: 15.0,
-          ),
-          TextField(
-            obscureText: false,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Available Letters:',
+        appBar: AppBar(
+          title: Text("Dictionary",
+              style: TextStyle(fontSize: 24, fontFamily: 'Lato')),
+          centerTitle: true,
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 15.0,
             ),
-            onChanged: (val) {
-              availableLetters = val;
-            },
-          ),
-          TextField(
-            obscureText: false,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Enter Pattern:',
+            TextField(
+              controller: clearLettersField,
+              obscureText: false,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Available Letters:',
+              ),
+              onChanged: (val) {
+                availableLetters = val;
+              },
             ),
-            onChanged: (val) {
-              inputPattern = val;
-            },
-          ),
-          TextField(
-            obscureText: false,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Number of Letters:',
+            TextField(
+              controller: clearPatternField,
+              obscureText: false,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Enter Pattern:',
+              ),
+              onChanged: (val) {
+                inputPattern = val;
+              },
             ),
-            onChanged: (val) {
-              numLetters = int.parse(val);
-            },
-          ),
-          // TODO: Pass letters, pattern, length
-          Row(
-            textDirection: TextDirection.rtl,
-            children: <Widget>[
-              FlatButton(
-                child: Text('submit'),
-                onPressed: () {
-                  // TODO: VALIDATE letters.length length/pattern.length else no not accept
-                  // dictionarySingleton
-                  getPermutations(availableLetters, numLetters, inputPattern);
+            TextField(
+              controller: clearLengthField,
+              obscureText: false,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Number of Letters:',
+              ),
+              onChanged: (val) {
+                numLetters = int.parse(val);
+              },
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              textDirection: TextDirection.rtl,
+              children: <Widget>[
+                SizedBox(
+                  child: Text('ms'),
+                ),
+                FlatButton(
+                    child: Text('LOOKUP'),
+                    onPressed: () {
+                      // TODO: VALIDATE letters.length length/pattern.length else no not accept
+                      // dictionarySingleton
+                      words = getPermutations(
+                          availableLetters, numLetters, inputPattern);
+                      print(inputPattern);
+                      print(words.length);
                 }),
-            ],
-          ),
-          // TODO: BUILD LISTVIEW TO READ TRIE MATCHES FROM PERMUTATIONS()
-        ],
-      ),
-    );
+                FlatButton(
+                    child: Text('CLEAR'),
+                    onPressed: clearTextInput,
+                ),
+              ],
+            ),
+            Expanded(
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: words.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    // return Text('${words[index]}');
+                    return ListTile(
+                      title: Text('${words[index]}'),
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) =>
+                      const Divider(),
+                ),
+            ),
+          ],
+        ));
   }
 }
+
 
 class AboutRoute extends StatelessWidget {
   @override
