@@ -42,19 +42,26 @@ List<String> getPermutations(String letters, int length, String pattern) {
     // For string in list of strings
     String perm = perms[j];
     for (int i = 0; i < length; i++) {
-      // Check match letter by letter
+      // If current letter is _ then skip
       if (pattern.substring(i, i + 1) != "_") {
+        // If current letter doesnt match letter in pattern then skip
         if (perm.substring(i, i + 1) == pattern.substring(i, i + 1)) {
-          if (checkPosition(perm, pattern, letters, i)) {
-            if (i == length - 1 && perm.substring(i) == pattern.substring(i)) {
-              if (t.contains(perm)) {
-                letterSet.add(perm);
-                // perms.remove(perm);
+          // If count of occurences for this letter doesnt match occurences in the pattern then skip
+          if (checkOccurences(perm, pattern, letters, i)) {
+            if (t.contains(perm)) {
+                  letterSet.add(perm);
+                  // perms.remove(perm);
               }
-            } else if (t.contains(perm)) {
-              letterSet.add(perm);
-              // perms.remove(perm);
-            }
+            // If on last letter, make sure same as pattern
+            // if (i == length - 1 && perm.substring(i) == pattern.substring(i)) {
+            //   if (t.contains(perm)) {
+            //     letterSet.add(perm);
+            //     // perms.remove(perm);
+            //   }
+            // } else if (t.contains(perm)) {
+            //   letterSet.add(perm);
+            //   // perms.remove(perm);
+            // }
           }
         }
         // perms.remove(perm);
@@ -65,7 +72,7 @@ List<String> getPermutations(String letters, int length, String pattern) {
   return letterSet;
 }
 
-bool checkPosition(String perm, String pattern, String letters, int pos) {
+bool checkOccurences(String perm, String pattern, String letters, int pos) {
   if (perm.substring(pos, pos + 1).allMatches(perm).length ==
       perm.substring(pos, pos + 1).allMatches(pattern).length) {
     return true;
@@ -183,21 +190,45 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class DictionaryRoute extends StatelessWidget {
+class DictionaryRoute extends StatefulWidget {
 
+  @override
+  _DictionaryRouteState createState() => _DictionaryRouteState();
+}
+
+class _DictionaryRouteState extends State<DictionaryRoute> {
+  String time = "0";
   List<String> words = List<String>();
+
   String availableLetters = '';
+
   String inputPattern = '';
+
   int numLetters = 0;
 
   final clearLettersField = TextEditingController();
+
   final clearPatternField = TextEditingController();
+
   final clearLengthField = TextEditingController();
 
   clearTextInput(){
     clearLettersField.clear();
     clearPatternField.clear();
     clearLengthField.clear();
+    clearList();
+  }
+
+  changeText() {
+    setState(() {
+      time = elapsedTime;
+    });
+  }
+
+  clearList() {
+    setState(() {
+      words.clear();
+    });
   }
 
   @override
@@ -251,10 +282,10 @@ class DictionaryRoute extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               textDirection: TextDirection.rtl,
               children: <Widget>[
-                // SizedBox(
-                //   // TODO: Show Timer
-                //   child: Text('$time'+ "ms"),
-                // ),
+                SizedBox(
+                  // TODO: Show Timer
+                  child: Text('$time'+ "ms"),
+                ),
                 FlatButton(
                     child: Text('LOOKUP'),
                     onPressed: () {
@@ -267,7 +298,7 @@ class DictionaryRoute extends StatelessWidget {
                         stopwatch.stop();
                         elapsedTime = stopwatch.elapsedMilliseconds.toString();
                         stopwatch.reset();
-                        showRuntime(context);
+                        changeText();
                       }
                 }),
                 FlatButton(
@@ -294,6 +325,7 @@ class DictionaryRoute extends StatelessWidget {
         ));
   }
 }
+
 
 void showRuntime(BuildContext context) {
   var alertDialog = AlertDialog(
