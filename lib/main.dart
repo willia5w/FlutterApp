@@ -8,49 +8,17 @@ import 'package:trotter/trotter.dart';
 import 'trie.dart' as Trie;
 
 var t = new Trie.Trie();
-
-// DictionarySingleton dictionarySingleton;
+var stopwatch = new Stopwatch();
+String elapsedTime = "0";
 
 void main() {
   runApp(MyApp());
 
-  // Get singleton instance
-  // dictionarySingleton = DictionarySingleton.instance;
 }
 
 Future<String> loadAsset() async {
   return await rootBundle.loadString('assets/textFiles/wordlist.txt');
 }
-
-// class Dictionary() {
-//   var t = new Trie.Trie();
-// }
-
-// class DictionarySingleton  {
-//   Dictionary dictionary = new Dictionary();
-//   DictionarySingleton._privateConstructor();
-// @override
-// void initState() {
-//   super.initState(BuildContext contex);
-//
-//   });//   var t = new Trie.Trie();
-// // }
-//
-//
-// // class DictionarySingleton  {
-// //   Dictionary dictionary = new Dictionary();
-// //   DictionarySingleton._privateConstructor();
-// // @override
-// // void initState() {
-// //   super.initState(BuildContext contex);
-// //
-// //   });
-// // }
-// //   static final DictionarySingleton instance = DictionarySingleton._privateConstructor();
-// // }
-// }
-//   static final DictionarySingleton instance = DictionarySingleton._privateConstructor();
-// }
 
 List<String> getPermutations(String letters, int length, String pattern) {
   // Stores matches
@@ -216,6 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class DictionaryRoute extends StatelessWidget {
+
   List<String> words = List<String>();
   String availableLetters = '';
   String inputPattern = '';
@@ -282,18 +251,24 @@ class DictionaryRoute extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               textDirection: TextDirection.rtl,
               children: <Widget>[
-                SizedBox(
-                  child: Text('ms'),
-                ),
+                // SizedBox(
+                //   // TODO: Show Timer
+                //   child: Text('$time'+ "ms"),
+                // ),
                 FlatButton(
                     child: Text('LOOKUP'),
                     onPressed: () {
-                      // TODO: VALIDATE letters.length length/pattern.length else no not accept
-                      // dictionarySingleton
-                      words = getPermutations(
-                          availableLetters, numLetters, inputPattern);
-                      print(inputPattern);
-                      print(words.length);
+                      if (numLetters != inputPattern.length) {
+                        generateLengthError(context);
+                      } else {
+                        stopwatch.start();
+                        words = getPermutations(
+                            availableLetters, numLetters, inputPattern);
+                        stopwatch.stop();
+                        elapsedTime = stopwatch.elapsedMilliseconds.toString();
+                        stopwatch.reset();
+                        showRuntime(context);
+                      }
                 }),
                 FlatButton(
                     child: Text('CLEAR'),
@@ -320,6 +295,45 @@ class DictionaryRoute extends StatelessWidget {
   }
 }
 
+void showRuntime(BuildContext context) {
+  var alertDialog = AlertDialog(
+    title: Text("Runtime: " + "$elapsedTime" + "ms",
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
+    // content: Text("Try Again",
+    //     style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+    //     textAlign: TextAlign.center),
+  );
+
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        Future.delayed(Duration(seconds: 2), () {
+          Navigator.of(context).pop(true);
+        });
+        return alertDialog;
+      });
+}
+
+void generateLengthError(BuildContext context) {
+  var alertDialog = AlertDialog(
+      title: Text("Number of letters must match pattern length.",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
+      content: Text("Try Again",
+          style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+          textAlign: TextAlign.center),
+      );
+
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        Future.delayed(Duration(seconds: 2), () {
+          Navigator.of(context).pop(true);
+        });
+          return alertDialog;
+        });
+}
 
 class AboutRoute extends StatelessWidget {
   @override
