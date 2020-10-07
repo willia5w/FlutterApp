@@ -31,40 +31,28 @@ List<String> getPermutations(String letters, int length, String pattern) {
   final uniqueLetters = unique.join();
 
   final bagOfItems = characters(uniqueLetters),
-      items = Amalgams(length, bagOfItems);
+      items = Permutations(length, bagOfItems);
 
   List<String> perms = new List<String>();
   for (final item in items()) {
     perms.add(item.join());
   }
-
+  // For each permutation
   for (int j = 0; j < perms.length; j++) {
-    // For string in list of strings
     String perm = perms[j];
+    // For each letter  of the permutation
     for (int i = 0; i < length; i++) {
       // If current letter is _ then skip
-      if (pattern.substring(i, i + 1) != "_") {
+      if (pattern.substring(i, i) != "_") {
         // If current letter doesnt match letter in pattern then skip
         if (perm.substring(i, i + 1) == pattern.substring(i, i + 1)) {
           // If count of occurences for this letter doesnt match occurences in the pattern then skip
           if (checkOccurences(perm, pattern, letters, i)) {
             if (t.contains(perm)) {
                   letterSet.add(perm);
-                  // perms.remove(perm);
               }
-            // If on last letter, make sure same as pattern
-            // if (i == length - 1 && perm.substring(i) == pattern.substring(i)) {
-            //   if (t.contains(perm)) {
-            //     letterSet.add(perm);
-            //     // perms.remove(perm);
-            //   }
-            // } else if (t.contains(perm)) {
-            //   letterSet.add(perm);
-            //   // perms.remove(perm);
-            // }
           }
         }
-        // perms.remove(perm);
       }
     }
   }
@@ -73,8 +61,11 @@ List<String> getPermutations(String letters, int length, String pattern) {
 }
 
 bool checkOccurences(String perm, String pattern, String letters, int pos) {
-  if (perm.substring(pos, pos + 1).allMatches(perm).length ==
-      perm.substring(pos, pos + 1).allMatches(pattern).length) {
+  String letter = perm.substring(pos, pos + 1);
+  if (letter.allMatches(perm).length  // # occurences of this letter in the permutation
+      == letter.allMatches(pattern).length // # occurences of this letter in the pattern
+      && letter.allMatches(perm).length // # occurences of this letter in the permutation
+        == letter.allMatches(letters).length) { // # occurences of this letter in the input string
     return true;
   }
   return false;
@@ -196,6 +187,15 @@ class DictionaryRoute extends StatefulWidget {
   _DictionaryRouteState createState() => _DictionaryRouteState();
 }
 
+final _text = TextEditingController();
+bool _validate = false;
+
+// @override
+// void dispose() {
+//   _text.dispose();
+//   super.dispose();
+// }
+
 class _DictionaryRouteState extends State<DictionaryRoute> {
   String time = "0";
   List<String> words = List<String>();
@@ -216,6 +216,9 @@ class _DictionaryRouteState extends State<DictionaryRoute> {
     clearLettersField.clear();
     clearPatternField.clear();
     clearLengthField.clear();
+    availableLetters = '';
+    inputPattern = '';
+    numLetters = 0;
     clearList();
   }
 
@@ -269,10 +272,12 @@ class _DictionaryRouteState extends State<DictionaryRoute> {
             ),
             TextField(
               controller: clearLengthField,
+              keyboardType: TextInputType.number,
               obscureText: false,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Number of Letters:',
+                errorText: _validate ? 'Value Can\'t Be Empty' : null,
               ),
               onChanged: (val) {
                 numLetters = int.parse(val);
@@ -283,23 +288,22 @@ class _DictionaryRouteState extends State<DictionaryRoute> {
               textDirection: TextDirection.rtl,
               children: <Widget>[
                 SizedBox(
-                  // TODO: Show Timer
                   child: Text('$time'+ "ms"),
                 ),
                 FlatButton(
                     child: Text('LOOKUP'),
                     onPressed: () {
-                      if (numLetters != inputPattern.length) {
+                      if (numLetters != inputPattern.length || availableLetters == "") {
                         generateLengthError(context);
                       } else {
-                        stopwatch.start();
-                        words = getPermutations(
-                            availableLetters, numLetters, inputPattern);
-                        stopwatch.stop();
-                        elapsedTime = stopwatch.elapsedMilliseconds.toString();
-                        stopwatch.reset();
-                        changeText();
-                      }
+                          stopwatch.start();
+                          words = getPermutations(
+                              availableLetters, numLetters, inputPattern);
+                          stopwatch.stop();
+                          elapsedTime = stopwatch.elapsedMilliseconds.toString();
+                          stopwatch.reset();
+                          changeText();
+                        }
                 }),
                 FlatButton(
                     child: Text('CLEAR'),
@@ -347,9 +351,11 @@ void showRuntime(BuildContext context) {
       });
 }
 
+
 void generateLengthError(BuildContext context) {
   var alertDialog = AlertDialog(
-      title: Text("Number of letters must match pattern length.",
+      title: Text("Number of letters must match pattern length.\n\n "
+          "Available letters cannot be blank.",
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
       content: Text("Try Again",
