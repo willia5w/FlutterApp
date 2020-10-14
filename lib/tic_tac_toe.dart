@@ -1,17 +1,7 @@
+import 'package:assignment1_app/GameLocalizations.dart';
 import 'package:flutter/material.dart';
+import 'GameLocalizations.dart';
 
-// void main() => runApp(MyApp());
-//
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp (
-//       debugShowCheckedModeBanner: false,
-//       home: HomePage(),
-//     );
-//   }
-// }
-//
 class GamePage extends StatefulWidget {
   @override
   _GamePageState createState() => _GamePageState();
@@ -40,6 +30,15 @@ class _GamePageState extends State<GamePage> {
   String playerX = "Player X";
   String playerOWinning = "Player O is winning!";
   String playerXWinning = "Player X is winning!";
+  String resetGame = "Reset Game";
+  String playAgain = "Play Again!";
+  String won = " won!";
+  String winnerPreface = "Winner ";
+  String draw = "Draw";
+
+  Locale locale;
+
+
   String currentLeader = "";
   int ohScore = 0;
   int exScore = 0;
@@ -61,7 +60,7 @@ class _GamePageState extends State<GamePage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('Player O', style: myTextStyle, ),
+                            Text(playerO, style: myTextStyle, ),
                             Text(ohScore.toString(), style: myTextStyle, ),
                           ],
                         ),
@@ -71,7 +70,8 @@ class _GamePageState extends State<GamePage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('Player X', style: myTextStyle, ),
+                            // TODO: Attempt translation within text object
+                            Text(GameLocalizations.of(context).translate(playerO), style: myTextStyle, ),
                             Text(exScore.toString(), style: myTextStyle, ),
                           ],
                         ),
@@ -97,11 +97,13 @@ class _GamePageState extends State<GamePage> {
                       onTap: (){
                         _tapped(index);
                       },
+                      // TODO: Bring out Box fragment into its own class and import + instantiate
                       child: Container(
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey[700])
                         ),
                         child: Center(
+                          // TODO: Change "X" to an image of an X
                           child: Text(displayExOh[index], style: TextStyle(color: Colors.white, fontSize: 40),),
                         ),
                       ),
@@ -121,7 +123,7 @@ class _GamePageState extends State<GamePage> {
                       color: Colors.red,
                       child: Center(
                           child: Text(
-                            'Reset Game',
+                            resetGame,
                             style: myTextStyle,
                           )
                       ),
@@ -222,10 +224,10 @@ class _GamePageState extends State<GamePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Winner ' + winner + " won!"),
+            title: Text(winnerPreface + winner + won),
             actions: <Widget>[
               FlatButton (
-                  child: Text('Play Again!'),
+                  child: Text(playAgain),
                   onPressed: (){
                     _clearBoard();
                     Navigator.of(context).pop();
@@ -259,10 +261,10 @@ class _GamePageState extends State<GamePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Draw"),
+            title: Text(draw),
             actions: <Widget>[
               FlatButton (
-                  child: Text('Play Again!'),
+                  child: Text(playAgain),
                   onPressed: (){
                     _clearBoard();
                     Navigator.of(context).pop();
