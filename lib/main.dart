@@ -6,10 +6,12 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:trotter/trotter.dart';
 import 'trie.dart' as Trie;
+import './tic_tac_toe.dart';
 
 var t = new Trie.Trie();
 var stopwatch = new Stopwatch();
 String elapsedTime = "0";
+
 
 void main() {
   runApp(MyApp());
@@ -95,6 +97,11 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: MyHomePage(title: appName),
+    //  TODO: Build imported route
+    routes: <String, WidgetBuilder>{
+    //   routes: <String, StatefulBuilder>{
+        '/tic_tac_toe': (BuildContext context) => new GamePage()
+      },
     );
   }
 }
@@ -174,6 +181,20 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
           ),
+          Align(
+            alignment: Alignment.center,
+            child: RaisedButton(
+              child: Text('Tic Tac Toe', style: TextStyle(fontSize: 24)),
+              onPressed: (() => Navigator.of(context).pushNamed('/tic_tac_toe')),  // Name set in routes
+              // onPressed: () {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => GameRoute),
+              //   );
+              // },
+            ),
+          ),
+          // TODO: Align at bottom of screen (responsive)
           VerticalPadding(
             color: Colors.white,
             child: Text(
@@ -249,6 +270,8 @@ class _DictionaryRouteState extends State<DictionaryRoute> {
             SizedBox(
               height: 15.0,
             ),
+            // TODO: Should allow blank input and show all words of length specified
+            // TODO: Restrict to 10 characters "Enter up to 10 characters" within text box
             TextField(
               controller: clearLettersField,
               obscureText: false,
@@ -272,6 +295,7 @@ class _DictionaryRouteState extends State<DictionaryRoute> {
               },
             ),
             TextField(
+
               controller: clearLengthField,
               keyboardType: TextInputType.number,
               obscureText: false,
