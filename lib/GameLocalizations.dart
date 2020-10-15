@@ -28,6 +28,7 @@ class GameLocalizations {
     // Load the language JSON file from the "lang" folder
     String jsonString =
     await rootBundle.loadString('lang/${locale.languageCode}.json');
+    print('FileName for Translation: lang/${locale.languageCode}.json');
     Map<String, dynamic> jsonMap = json.decode(jsonString);
 
     _localizedStrings = jsonMap.map((key, value) {
@@ -39,6 +40,7 @@ class GameLocalizations {
 
   // This method will be called from every widget which needs a localized text
   String translate(String key) {
+    print(key + ": " + _localizedStrings[key]);
     return _localizedStrings[key];
   }
 }
@@ -63,8 +65,7 @@ class _GameLocalizationsDelegate extends LocalizationsDelegate<GameLocalizations
   // @override
   // Future<GameLocalizations> load(Locale locale) => GameLocalizations.load(locale);
 
-  // TODO: Returns true when the localization changes. Update to allow changing
+  // TODO: Rebuild all apps widgets after the load of resources
   @override
-  bool shouldReload(_GameLocalizationsDelegate old) => false;
-// bool shouldReload(LocalizationsDelegate<GameLocalizations> old) => true;
+  bool shouldReload(_GameLocalizationsDelegate old) => true;
 }

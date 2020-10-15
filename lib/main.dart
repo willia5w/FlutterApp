@@ -1,3 +1,4 @@
+import 'package:assignment1_app/GameLocalizations.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:async' show Future;
@@ -7,6 +8,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:trotter/trotter.dart';
 import 'trie.dart' as Trie;
 import './tic_tac_toe.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'GameLocalizations.dart';
 
 var t = new Trie.Trie();
 var stopwatch = new Stopwatch();
@@ -82,6 +86,15 @@ bool checkOccurences(String perm, String pattern, String letters, int pos) {
 }
 
 class MyApp extends StatelessWidget {
+
+  // Widget updateLocale(BuildContext context) {
+  //   return Localizations.override(
+  //     context: context,
+  //     locale: const Locale('es', 'US'),
+  //     child: GamePage,
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     final appName = 'Daniel Williams';
@@ -96,6 +109,34 @@ class MyApp extends StatelessWidget {
           headline1: TextStyle(fontSize: 80.0, fontWeight: FontWeight.bold),
         ),
       ),
+      // List all of the app's supported locales here
+      supportedLocales: [
+        Locale('en', 'US'),
+        Locale('es', 'US'),
+      ],
+      // These delegates make sure that the localization data for the proper language is loaded
+      localizationsDelegates: [
+        // THIS CLASS WILL BE ADDED LATER
+        // A class which loads the translations from JSON files
+        GameLocalizations.delegate,
+        // Built-in localization of basic text for Material widgets
+        GlobalMaterialLocalizations.delegate,
+        // Built-in localization for text direction LTR/RTL
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      // Returns a locale which will be used by the app
+      localeResolutionCallback: (locale, supportedLocales) {
+        // Check if the current device locale is supported
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale.languageCode &&
+              supportedLocale.countryCode == locale.countryCode) {
+            return supportedLocale;
+          }
+        }
+        // If the locale of the device is not supported, use the first one
+        // from the list (English, in this case).
+        return supportedLocales.first;
+      },
       home: MyHomePage(title: appName),
     //  TODO: Build imported route
     routes: <String, WidgetBuilder>{

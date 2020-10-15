@@ -2,15 +2,17 @@ import 'package:assignment1_app/GameLocalizations.dart';
 import 'package:flutter/material.dart';
 import 'GameLocalizations.dart';
 
+
 class GamePage extends StatefulWidget {
   @override
   _GamePageState createState() => _GamePageState();
-}
 
+}
 
 // class _HomePageState extends State<HomePage> {
 class _GamePageState extends State<GamePage> {
-
+  // TODO: Translate being called on null
+  // GameLocalizations gameLocalizations = new GameLocalizations(Locale('es', 'US'));
   bool ohTurn = true; // first player is O!
   List<String> displayExOh = [
     '',
@@ -24,34 +26,38 @@ class _GamePageState extends State<GamePage> {
     '',
   ];
 
+  // Resources res = getResources();
+  // Locale mylocale = new Locale("es");
+  //conf.locale = myLocale;
+  // res.updateConfiguration(conf, dm);
+  // Intent refresh
+
   var myTextStyle = TextStyle(color: Colors.white, fontSize: 30);
   var myTextStyleLeader = TextStyle(color: Colors.white, fontSize: 20);
-  String playerO = "Player O";
-  String playerX = "Player X";
-  String playerOWinning = "Player O is winning!";
-  String playerXWinning = "Player X is winning!";
-  String resetGame = "Reset Game";
-  String playAgain = "Play Again!";
-  String won = " won!";
-  String winnerPreface = "Winner ";
-  String draw = "Draw";
 
- //  Resources res = getResources();
- //  Locale mylocale = new Locale("es");
- //  //conf.locale = myLocale;
- // res.updateConfiguration(conf, dm);
- // Intent refresh
+
 
   String currentLeader = "";
   int ohScore = 0;
   int exScore = 0;
   int filledBoxes = 0;
 
+
+
   @override
   Widget build(BuildContext context) {
+    // selectLonaguage(context);
+
+    GameLocalizations.delegate.load(Locale('es', 'US'));
+
+    String playerO = GameLocalizations.of(context).translate("Player O");
+    String playerX = GameLocalizations.of(context).translate("Player X");
+    String resetGame = GameLocalizations.of(context).translate("Reset Game");
+
     return Scaffold(
         backgroundColor: Colors.grey[800],
         body: Column(
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Expanded(
               child: Container(
@@ -75,7 +81,7 @@ class _GamePageState extends State<GamePage> {
                           children: [
                             // TODO: Attempt translation within text object
                             // Text(GameLocalizations.of(context).translate(playerO), style: myTextStyle, ),
-                            Text(playerO, style: myTextStyle, ),
+                            Text(playerX, style: myTextStyle, ),
                             Text(exScore.toString(), style: myTextStyle, ),
                           ],
                         ),
@@ -91,7 +97,6 @@ class _GamePageState extends State<GamePage> {
                 ]
             ),
             Expanded (
-              // TODO: makeBoard() Fragment?
               flex: 3,
               child: GridView.builder(
                   itemCount: 9, // Number of squares
@@ -105,15 +110,10 @@ class _GamePageState extends State<GamePage> {
                       // TODO: Bring out Box fragment into its own class and import + instantiate
                       child: Container(
                         decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[700])
-                        ),
-                        child: Center(
-                          // TODO: if displayEhOhImage == "X", then image of an me, otherwise image of app icon
-                            child: Image.asset(displayExOh[index], width: 100, height: 100),
-
-                          // child: Text(displayExOh[index], style: TextStyle(color: Colors.white, fontSize: 40),),
-                          // child: Image.asset('assets/images/corporate_daniel_williams.jpg',
-                          //     width: 100, height: 100),
+                            border: Border.all(color: Colors.grey[700]),
+                          image: new DecorationImage(
+                              image: new NetworkImage(displayExOh[index]),
+                          ),
                         ),
                       ),
                     );
@@ -145,15 +145,17 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  void _tapped(int index) {
 
+
+  void _tapped(int index) {
+    // #Acknowledgements: Picsum Phots https://picsum.photos/
     setState(() {
       if(ohTurn && displayExOh[index] == '') {
-        displayExOh[index] = 'assets/images/icon.png';
+        displayExOh[index] = 'https://picsum.photos/id/1069/200';
         filledBoxes += 1;
       }
       else if (!ohTurn && displayExOh[index] == '') {
-        displayExOh[index] = 'assets/images/corporate_daniel_williams.jpg';
+        displayExOh[index] = 'https://picsum.photos/id/1080/200';
         filledBoxes += 1;
       }
 
@@ -163,6 +165,8 @@ class _GamePageState extends State<GamePage> {
   }
 
   String _checkPlayer(String xo) {
+    String playerO = GameLocalizations.of(context).translate("Player O");
+    String playerX = GameLocalizations.of(context).translate("Player X");
     if(xo == 'O'){
       return playerO;
     }
@@ -227,6 +231,13 @@ class _GamePageState extends State<GamePage> {
 
   // Shows a dialog if there is a winner
   void _showWinDialog(String winner) {
+    String playerO = GameLocalizations.of(context).translate("Player O");
+    String playerX = GameLocalizations.of(context).translate("Player X");
+    String playerOWinning = GameLocalizations.of(context).translate("Player O is winning!");
+    String playerXWinning = GameLocalizations.of(context).translate("Player X is winning!");
+    String won = GameLocalizations.of(context).translate(" won!");
+    String winnerPreface = GameLocalizations.of(context).translate("Winner ");
+    String playAgain = GameLocalizations.of(context).translate("Play Again!");
 
     showDialog(
         barrierDismissible: false,
@@ -264,6 +275,8 @@ class _GamePageState extends State<GamePage> {
 
   // Shows a dialog if there is a winner
   void _showDrawDialog() {
+    String playAgain = GameLocalizations.of(context).translate("Play Again!");
+    String draw = GameLocalizations.of(context).translate("Draw");
 
     showDialog(
         barrierDismissible: false,
@@ -304,6 +317,35 @@ class _GamePageState extends State<GamePage> {
     filledBoxes = 0;
 
 
+  }
+
+  void selectLonaguage(BuildContext context) {
+    var alertDialog = AlertDialog(
+        title: Text("Error Generated!",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
+        content: Text("Please close the app.",
+            style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+            textAlign: TextAlign.center),
+        actions: [
+          Align(
+              alignment: Alignment.center,
+              child: FlatButton(
+                  child: Text(
+                    "Close now.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+                  ),
+                  onPressed: () {
+                    exit(0);
+                  })),
+        ]);
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alertDialog;
+        });
   }
 
 }
