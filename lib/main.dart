@@ -99,7 +99,6 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(title: appName),
     //  TODO: Build imported route
     routes: <String, WidgetBuilder>{
-    //   routes: <String, StatefulBuilder>{
         '/tic_tac_toe': (BuildContext context) => new GamePage()
       },
     );

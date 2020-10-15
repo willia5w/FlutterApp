@@ -36,8 +36,11 @@ class _GamePageState extends State<GamePage> {
   String winnerPreface = "Winner ";
   String draw = "Draw";
 
-  Locale locale;
-
+ //  Resources res = getResources();
+ //  Locale mylocale = new Locale("es");
+ //  //conf.locale = myLocale;
+ // res.updateConfiguration(conf, dm);
+ // Intent refresh
 
   String currentLeader = "";
   int ohScore = 0;
@@ -71,7 +74,8 @@ class _GamePageState extends State<GamePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             // TODO: Attempt translation within text object
-                            Text(GameLocalizations.of(context).translate(playerO), style: myTextStyle, ),
+                            // Text(GameLocalizations.of(context).translate(playerO), style: myTextStyle, ),
+                            Text(playerO, style: myTextStyle, ),
                             Text(exScore.toString(), style: myTextStyle, ),
                           ],
                         ),
@@ -87,6 +91,7 @@ class _GamePageState extends State<GamePage> {
                 ]
             ),
             Expanded (
+              // TODO: makeBoard() Fragment?
               flex: 3,
               child: GridView.builder(
                   itemCount: 9, // Number of squares
@@ -103,8 +108,12 @@ class _GamePageState extends State<GamePage> {
                             border: Border.all(color: Colors.grey[700])
                         ),
                         child: Center(
-                          // TODO: Change "X" to an image of an X
-                          child: Text(displayExOh[index], style: TextStyle(color: Colors.white, fontSize: 40),),
+                          // TODO: if displayEhOhImage == "X", then image of an me, otherwise image of app icon
+                            child: Image.asset(displayExOh[index], width: 100, height: 100),
+
+                          // child: Text(displayExOh[index], style: TextStyle(color: Colors.white, fontSize: 40),),
+                          // child: Image.asset('assets/images/corporate_daniel_williams.jpg',
+                          //     width: 100, height: 100),
                         ),
                       ),
                     );
@@ -140,11 +149,11 @@ class _GamePageState extends State<GamePage> {
 
     setState(() {
       if(ohTurn && displayExOh[index] == '') {
-        displayExOh[index] = 'O';
+        displayExOh[index] = 'assets/images/icon.png';
         filledBoxes += 1;
       }
       else if (!ohTurn && displayExOh[index] == '') {
-        displayExOh[index] = 'X';
+        displayExOh[index] = 'assets/images/corporate_daniel_williams.jpg';
         filledBoxes += 1;
       }
 
