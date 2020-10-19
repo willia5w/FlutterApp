@@ -1,17 +1,17 @@
 import 'package:assignment1_app/GameLocalizations.dart';
 import 'package:flutter/material.dart';
-import 'GameLocalizations.dart';
+// import 'GameLocalizations.dart';
 
 
 class GamePage extends StatefulWidget {
   @override
   _GamePageState createState() => _GamePageState();
-
 }
+
 
 // class _HomePageState extends State<HomePage> {
 class _GamePageState extends State<GamePage> {
-  // TODO: Translate being called on null
+  // TODO: Allow Locale override within Tic Tac Toe activity
   // GameLocalizations gameLocalizations = new GameLocalizations(Locale('es', 'US'));
   bool ohTurn = true; // first player is O!
   List<String> displayExOh = [
@@ -26,29 +26,16 @@ class _GamePageState extends State<GamePage> {
     '',
   ];
 
-  // Resources res = getResources();
-  // Locale mylocale = new Locale("es");
-  //conf.locale = myLocale;
-  // res.updateConfiguration(conf, dm);
-  // Intent refresh
-
   var myTextStyle = TextStyle(color: Colors.white, fontSize: 30);
   var myTextStyleLeader = TextStyle(color: Colors.white, fontSize: 20);
-
-
 
   String currentLeader = "";
   int ohScore = 0;
   int exScore = 0;
   int filledBoxes = 0;
 
-
-
   @override
   Widget build(BuildContext context) {
-    // selectLonaguage(context);
-
-    GameLocalizations.delegate.load(Locale('es', 'US'));
 
     String playerO = GameLocalizations.of(context).translate("Player O");
     String playerX = GameLocalizations.of(context).translate("Player X");
@@ -79,8 +66,6 @@ class _GamePageState extends State<GamePage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // TODO: Attempt translation within text object
-                            // Text(GameLocalizations.of(context).translate(playerO), style: myTextStyle, ),
                             Text(playerX, style: myTextStyle, ),
                             Text(exScore.toString(), style: myTextStyle, ),
                           ],
@@ -107,7 +92,6 @@ class _GamePageState extends State<GamePage> {
                       onTap: (){
                         _tapped(index);
                       },
-                      // TODO: Bring out Box fragment into its own class and import + instantiate
                       child: Container(
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey[700]),
@@ -151,11 +135,11 @@ class _GamePageState extends State<GamePage> {
     // #Acknowledgements: Picsum Phots https://picsum.photos/
     setState(() {
       if(ohTurn && displayExOh[index] == '') {
-        displayExOh[index] = 'https://picsum.photos/id/1069/200';
+        displayExOh[index] = 'https://cdn.pixabay.com/photo/2013/07/12/16/22/alphabet-150778_1280.png';
         filledBoxes += 1;
       }
       else if (!ohTurn && displayExOh[index] == '') {
-        displayExOh[index] = 'https://picsum.photos/id/1080/200';
+        displayExOh[index] = 'https://cdn.pixabay.com/photo/2012/04/12/20/12/x-30465_1280.png';
         filledBoxes += 1;
       }
 
@@ -311,41 +295,52 @@ class _GamePageState extends State<GamePage> {
 
   void _resetGame() {
     _clearBoard();
+    GameLocalizations.delegate.load(Locale('en'));
     currentLeader = "";
     ohScore = 0;
     exScore = 0;
     filledBoxes = 0;
-
-
-  }
-
-  void selectLonaguage(BuildContext context) {
-    var alertDialog = AlertDialog(
-        title: Text("Error Generated!",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
-        content: Text("Please close the app.",
-            style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
-            textAlign: TextAlign.center),
-        actions: [
-          Align(
-              alignment: Alignment.center,
-              child: FlatButton(
-                  child: Text(
-                    "Close now.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
-                  ),
-                  onPressed: () {
-                    exit(0);
-                  })),
-        ]);
-
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alertDialog;
-        });
   }
 
 }
+
+// void selectLanguage(BuildContext context) {
+//   var alertDialog = AlertDialog(
+//       title: Text("Set Language",
+//           textAlign: TextAlign.center,
+//           style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
+//       actions: [
+//         Align(
+//             alignment: Alignment.bottomRight,
+//             child: FlatButton(
+//                 child: Text(
+//                   "Spanish",
+//                   textAlign: TextAlign.left,
+//                   style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+//                 ),
+//                 onPressed: () {
+//                   GameLocalizations.delegate.load(Locale('es', 'US'));
+//                   print("Chose spanish.");
+//                   // Navigator.of(context).pushNamed('/tic_tac_toe');
+//                 })),
+//         Align(
+//             alignment: Alignment.bottomLeft,
+//             child: FlatButton(
+//                 child: Text(
+//                   "English",
+//                   textAlign: TextAlign.center,
+//                   style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+//                 ),
+//                 onPressed: () {
+//                   GameLocalizations.delegate.load(Locale('en', 'US'));
+//                   print("Chose english.");
+//                   // Navigator.of(context).pushNamed('/tic_tac_toe');
+//                 })),
+//       ]);
+//
+//   showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return alertDialog;
+//       });
+// }
