@@ -1,6 +1,8 @@
 import 'package:assignment1_app/GameLocalizations.dart';
 import 'package:flutter/material.dart';
-// import 'GameLocalizations.dart';
+import 'GameLocalizations.dart';
+
+String _blankTile = "https://picsum.photos/300/300.jpg";
 
 
 class GamePage extends StatefulWidget {
@@ -13,17 +15,29 @@ class GamePage extends StatefulWidget {
 class _GamePageState extends State<GamePage> {
   // TODO: Allow Locale override within Tic Tac Toe activity
   // GameLocalizations gameLocalizations = new GameLocalizations(Locale('es', 'US'));
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      setState(() {
+        selectLanguage(context);
+      });
+    });
+  }
+
+  
   bool ohTurn = true; // first player is O!
   List<String> displayExOh = [
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
+    _blankTile,
+    _blankTile,
+    _blankTile,
+    _blankTile,
+    _blankTile,
+    _blankTile,
+    _blankTile,
+    _blankTile,
+    _blankTile,
   ];
 
   var myTextStyle = TextStyle(color: Colors.white, fontSize: 30);
@@ -134,11 +148,11 @@ class _GamePageState extends State<GamePage> {
   void _tapped(int index) {
     // #Acknowledgements: Picsum Phots https://picsum.photos/
     setState(() {
-      if(ohTurn && displayExOh[index] == '') {
+      if(ohTurn && displayExOh[index] == _blankTile) {
         displayExOh[index] = 'https://cdn.pixabay.com/photo/2013/07/12/16/22/alphabet-150778_1280.png';
         filledBoxes += 1;
       }
-      else if (!ohTurn && displayExOh[index] == '') {
+      else if (!ohTurn && displayExOh[index] == _blankTile) {
         displayExOh[index] = 'https://cdn.pixabay.com/photo/2012/04/12/20/12/x-30465_1280.png';
         filledBoxes += 1;
       }
@@ -164,46 +178,46 @@ class _GamePageState extends State<GamePage> {
     // Rows
     if(displayExOh[0] == displayExOh[1] &&
         displayExOh[0] == displayExOh[2] &&
-        displayExOh[0] != '') {
+        displayExOh[0] != _blankTile) {
       _showWinDialog(_checkPlayer(displayExOh[0]));
     }
     if(displayExOh[3] == displayExOh[4] &&
         displayExOh[3] == displayExOh[5] &&
-        displayExOh[3] != '') {
+        displayExOh[3] != _blankTile) {
       _showWinDialog(_checkPlayer(displayExOh[3]));
     }
     if(displayExOh[6] == displayExOh[7] &&
         displayExOh[6] == displayExOh[8] &&
-        displayExOh[6] != '') {
+        displayExOh[6] != _blankTile) {
       _showWinDialog(_checkPlayer(displayExOh[6]));
     }
 
     // Columns
     if(displayExOh[0] == displayExOh[3] &&
         displayExOh[0] == displayExOh[6] &&
-        displayExOh[0] != '') {
+        displayExOh[0] != _blankTile) {
       _showWinDialog(_checkPlayer(displayExOh[0]));
     }
     if(displayExOh[1] == displayExOh[4] &&
         displayExOh[1] == displayExOh[7] &&
-        displayExOh[1] != '') {
+        displayExOh[1] != _blankTile) {
       _showWinDialog(_checkPlayer(displayExOh[1]));
     }
     if(displayExOh[2] == displayExOh[5] &&
         displayExOh[2] == displayExOh[8] &&
-        displayExOh[2] != '') {
+        displayExOh[2] != _blankTile) {
       _showWinDialog(_checkPlayer(displayExOh[2]));
     }
 
     // Diagonal
     if(displayExOh[0] == displayExOh[4] &&
         displayExOh[0] == displayExOh[8] &&
-        displayExOh[0] != '') {
+        displayExOh[0] != _blankTile) {
       _showWinDialog(_checkPlayer(displayExOh[0]));
     }
     if(displayExOh[2] == displayExOh[4] &&
         displayExOh[2] == displayExOh[6] &&
-        displayExOh[2] != '') {
+        displayExOh[2] != _blankTile) {
       _showWinDialog(_checkPlayer(displayExOh[2]));
     }
     else if(filledBoxes == 9) {
@@ -285,7 +299,7 @@ class _GamePageState extends State<GamePage> {
   void _clearBoard() {
     setState(() {
       for(int i = 0; i < displayExOh.length; i++) {
-        displayExOh[i] = "";
+        displayExOh[i] = _blankTile;
       }
     });
 
@@ -295,7 +309,6 @@ class _GamePageState extends State<GamePage> {
 
   void _resetGame() {
     _clearBoard();
-    GameLocalizations.delegate.load(Locale('en'));
     currentLeader = "";
     ohScore = 0;
     exScore = 0;
@@ -304,43 +317,39 @@ class _GamePageState extends State<GamePage> {
 
 }
 
-// void selectLanguage(BuildContext context) {
-//   var alertDialog = AlertDialog(
-//       title: Text("Set Language",
-//           textAlign: TextAlign.center,
-//           style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
-//       actions: [
-//         Align(
-//             alignment: Alignment.bottomRight,
-//             child: FlatButton(
-//                 child: Text(
-//                   "Spanish",
-//                   textAlign: TextAlign.left,
-//                   style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
-//                 ),
-//                 onPressed: () {
-//                   GameLocalizations.delegate.load(Locale('es', 'US'));
-//                   print("Chose spanish.");
-//                   // Navigator.of(context).pushNamed('/tic_tac_toe');
-//                 })),
-//         Align(
-//             alignment: Alignment.bottomLeft,
-//             child: FlatButton(
-//                 child: Text(
-//                   "English",
-//                   textAlign: TextAlign.center,
-//                   style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
-//                 ),
-//                 onPressed: () {
-//                   GameLocalizations.delegate.load(Locale('en', 'US'));
-//                   print("Chose english.");
-//                   // Navigator.of(context).pushNamed('/tic_tac_toe');
-//                 })),
-//       ]);
-//
-//   showDialog(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return alertDialog;
-//       });
-// }
+void selectLanguage(BuildContext context) {
+  var alertDialog = AlertDialog(
+      title: Text("Set Language",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
+      actions: [
+        Align(
+            alignment: Alignment.bottomRight,
+            child: FlatButton(
+                child: Text(
+                  "Spanish",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+                ),
+                onPressed: () => Navigator.of(context, rootNavigator: true).pop(
+                  GameLocalizations.delegate.load(Locale('es')))
+                )),
+        Align(
+            alignment: Alignment.bottomLeft,
+            child: FlatButton(
+                child: Text(
+                  "English",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+                ),
+                onPressed: () => Navigator.of(context, rootNavigator: true).pop(
+                  GameLocalizations.delegate.load(Locale('en')))
+                )),
+      ]);
+
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alertDialog;
+      });
+}

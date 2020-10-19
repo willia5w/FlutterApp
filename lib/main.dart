@@ -10,8 +10,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'GameLocalizations.dart';
 
 
-
-
 void main() {
   runApp(MyApp());
 }
@@ -50,19 +48,16 @@ class MyApp extends StatelessWidget {
         // Built-in localization for text direction LTR/RTL
         GlobalWidgetsLocalizations.delegate,
       ],
-      // // Returns a locale which will be used by the app
-      // localeResolutionCallback: (locale, supportedLocales) {
-      //   // Check if the current device locale is supported
-      //   for (var supportedLocale in supportedLocales) {
-      //     if (supportedLocale.languageCode == locale.languageCode &&
-      //         supportedLocale.countryCode == locale.countryCode) {
-      //       return supportedLocale;
-      //     }
-      //   }
-      //   // If the locale of the device is not supported, use the first one
-      //   // from the list (English, in this case).
-      //   return supportedLocales.first;
-      // },
+      // Returns a locale which will be used by the app
+      localeResolutionCallback: (locale, supportedLocales) {
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale.languageCode) {
+            return supportedLocale;
+          }
+        }
+      // If the locale of the device is not supported, use the first from supportedLocales
+        return supportedLocales.first;
+      },
       home: MyHomePage(title: appName),
       routes: <String, WidgetBuilder>{
         '/tic_tac_toe': (BuildContext context) => new GamePage(),
@@ -134,11 +129,9 @@ class _MyHomePageState extends State<MyHomePage> {
             alignment: Alignment.center,
             child: RaisedButton(
               child: Text('Tic Tac Toe', style: TextStyle(fontSize: 24)),
-              // onPressed: (() => Navigator.of(context).pushNamed('/tic_tac_toe')),
-              onPressed: (() => selectLanguage(context)),
+              onPressed: (() => Navigator.of(context).pushNamed('/tic_tac_toe')),
             ),
           ),
-          // TODO: Align at bottom of screen (responsive)
           Expanded(
             child: Align(
               alignment: FractionalOffset.bottomCenter,
@@ -158,49 +151,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-void selectLanguage(BuildContext context) {
-  var alertDialog = AlertDialog(
-      title: Text("Set Language",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
-      actions: [
-        Align(
-            alignment: Alignment.bottomLeft,
-            child: FlatButton(
-                child: Text(
-                  "Spanish",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
-                ),
-                onPressed: () {
-                  GameLocalizations.delegate.load(Locale('es', 'US'));
-                  print("Chose spanish.");
-                  Navigator.of(context).pushNamed('/tic_tac_toe');
-                })),
-        Align(
-            alignment: Alignment.bottomRight,
-            child: FlatButton(
-                child: Text(
-                  "English",
-                  textAlign: TextAlign.right,
-                  style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
-                ),
-                onPressed: () {
-                  GameLocalizations.delegate.load(Locale('en', 'US'));
-                  print("Chose english.");
-                  Navigator.of(context).pushNamed('/tic_tac_toe');
-                })),
-      ]);
-
-  showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alertDialog;
-      });
-}
-
-
 
 
 void showRuntime(BuildContext context) {
