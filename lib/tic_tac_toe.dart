@@ -1,6 +1,10 @@
 import 'package:assignment1_app/GameLocalizations.dart';
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'GameLocalizations.dart';
+import '././game_resources/game_translator.dart' as translator;
 
 String _blankTile = "https://picsum.photos/300/300.jpg";
 
@@ -8,25 +12,13 @@ String _blankTile = "https://picsum.photos/300/300.jpg";
 class GamePage extends StatefulWidget {
   @override
   _GamePageState createState() => _GamePageState();
+
 }
 
 
 // class _HomePageState extends State<HomePage> {
 class _GamePageState extends State<GamePage> {
-  // TODO: Allow Locale override within Tic Tac Toe activity
-  // GameLocalizations gameLocalizations = new GameLocalizations(Locale('es', 'US'));
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      setState(() {
-        selectLanguage(context);
-      });
-    });
-  }
-
-  
   bool ohTurn = true; // first player is O!
   List<String> displayExOh = [
     _blankTile,
@@ -51,9 +43,9 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
 
-    String playerO = GameLocalizations.of(context).translate("Player O");
-    String playerX = GameLocalizations.of(context).translate("Player X");
-    String resetGame = GameLocalizations.of(context).translate("Reset Game");
+    String playerO = translator.translate("Player O");
+    String playerX = translator.translate("Player X");
+    String resetGame = translator.translate("Reset Game");
 
     return Scaffold(
         backgroundColor: Colors.grey[800],
@@ -163,8 +155,8 @@ class _GamePageState extends State<GamePage> {
   }
 
   String _checkPlayer(String xo) {
-    String playerO = GameLocalizations.of(context).translate("Player O");
-    String playerX = GameLocalizations.of(context).translate("Player X");
+    String playerO = translator.translate("Player O");
+    String playerX = translator.translate("Player X");
     if(xo == 'O'){
       return playerO;
     }
@@ -229,13 +221,13 @@ class _GamePageState extends State<GamePage> {
 
   // Shows a dialog if there is a winner
   void _showWinDialog(String winner) {
-    String playerO = GameLocalizations.of(context).translate("Player O");
-    String playerX = GameLocalizations.of(context).translate("Player X");
-    String playerOWinning = GameLocalizations.of(context).translate("Player O is winning!");
-    String playerXWinning = GameLocalizations.of(context).translate("Player X is winning!");
-    String won = GameLocalizations.of(context).translate(" won!");
-    String winnerPreface = GameLocalizations.of(context).translate("Winner ");
-    String playAgain = GameLocalizations.of(context).translate("Play Again!");
+    String playerO = translator.translate("Player O");
+    String playerX = translator.translate("Player X");
+    String playerOWinning = translator.translate("Player O is winning!");
+    String playerXWinning = translator.translate("Player X is winning!");
+    String won = translator.translate(" won!");
+    String winnerPreface = translator.translate("Winner ");
+    String playAgain = translator.translate("Play Again!");
 
     showDialog(
         barrierDismissible: false,
@@ -273,8 +265,8 @@ class _GamePageState extends State<GamePage> {
 
   // Shows a dialog if there is a winner
   void _showDrawDialog() {
-    String playAgain = GameLocalizations.of(context).translate("Play Again!");
-    String draw = GameLocalizations.of(context).translate("Draw");
+    String playAgain = translator.translate("Play Again!");
+    String draw = translator.translate("Draw");
 
     showDialog(
         barrierDismissible: false,
@@ -317,39 +309,3 @@ class _GamePageState extends State<GamePage> {
 
 }
 
-void selectLanguage(BuildContext context) {
-  var alertDialog = AlertDialog(
-      title: Text("Set Language",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
-      actions: [
-        Align(
-            alignment: Alignment.bottomRight,
-            child: FlatButton(
-                child: Text(
-                  "Spanish",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
-                ),
-                onPressed: () => Navigator.of(context, rootNavigator: true).pop(
-                  GameLocalizations.delegate.load(Locale('es')))
-                )),
-        Align(
-            alignment: Alignment.bottomLeft,
-            child: FlatButton(
-                child: Text(
-                  "English",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
-                ),
-                onPressed: () => Navigator.of(context, rootNavigator: true).pop(
-                  GameLocalizations.delegate.load(Locale('en')))
-                )),
-      ]);
-
-  showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alertDialog;
-      });
-}

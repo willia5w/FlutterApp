@@ -8,6 +8,7 @@ import 'dictionary_lookup.dart';
 import './tic_tac_toe.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'GameLocalizations.dart';
+import '././game_resources/game_translator.dart' as translator;
 
 
 void main() {
@@ -129,7 +130,15 @@ class _MyHomePageState extends State<MyHomePage> {
             alignment: Alignment.center,
             child: RaisedButton(
               child: Text('Tic Tac Toe', style: TextStyle(fontSize: 24)),
-              onPressed: (() => Navigator.of(context).pushNamed('/tic_tac_toe')),
+              onPressed: (){
+                translator.selectLanguage(context);
+                // Future.delayed(Duration(seconds: 2), () {
+                //   Navigator.of(context).pushNamed('/tic_tac_toe');
+                // });
+                if (translator.localizedStrings.length > 0) {
+                  Navigator.of(context).pushNamed('/tic_tac_toe');
+                }
+              },
             ),
           ),
           Expanded(
