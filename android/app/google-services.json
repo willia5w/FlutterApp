@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "27000921638",
+    "firebase_url": "https://tic-tac-toe-f244c.firebaseio.com",
+    "project_id": "tic-tac-toe-f244c",
+    "storage_bucket": "tic-tac-toe-f244c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:27000921638:android:0500fe20bf3333a4fb10e7",
+        "android_client_info": {
+          "package_name": "com.danielwilliams.neusea"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "27000921638-3l2n988j8t92lpofei78iqushc2nkipk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtEIVjQ7Er7LVWI1OozODjufZx0-K3Duw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "27000921638-3l2n988j8t92lpofei78iqushc2nkipk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

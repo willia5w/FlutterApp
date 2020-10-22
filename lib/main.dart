@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'dart:async' show Future;
 import 'dart:io';
 import 'dictionary_lookup.dart';
-
 import './tic_tac_toe.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'GameLocalizations.dart';
 import '././game_resources/game_translator.dart' as translator;
 
+import './firebase_realtime_db.dart';
 
 void main() {
   runApp(MyApp());
@@ -62,7 +62,8 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(title: appName),
       routes: <String, WidgetBuilder>{
         '/tic_tac_toe': (BuildContext context) => new GamePage(),
-        '/dictionary_lookup': (BuildContext context) => new DictionaryRoute()
+        '/dictionary_lookup': (BuildContext context) => new DictionaryRoute(),
+        '/firebase_realtime_db': (BuildContext context) => new FirebaseRealtimeDemoScreen(),
       },
     );
   }
@@ -123,6 +124,15 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text('Dictionary', style: TextStyle(fontSize: 24)),
               onPressed: () {
                     Navigator.of(context).pushNamed('/dictionary_lookup');
+              },
+            ),
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: RaisedButton(
+              child: Text('FireBase DB Demo', style: TextStyle(fontSize: 24)),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/firebase_realtime_db');
               },
             ),
           ),

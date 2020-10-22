@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:assignment1_app/GameLocalizations.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -5,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'GameLocalizations.dart';
 import '././game_resources/game_translator.dart' as translator;
+
+
+
 
 String _blankTile = "https://picsum.photos/300/300.jpg";
 

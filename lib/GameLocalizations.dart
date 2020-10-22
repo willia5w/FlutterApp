@@ -38,9 +38,6 @@ class GameLocalizations {
 
 
   String translate(String key) {
-
-    print(key + ", " + "Translation: " + _localizedStrings[key]);
-
     return _localizedStrings[key];
   }
 }
