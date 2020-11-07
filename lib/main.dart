@@ -8,14 +8,28 @@ import 'GameLocalizations.dart';
 import '././game_resources/game_setup.dart';
 
 import './firebase_realtime_db.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(OverlaySupport(child: MyApp()));
 }
 
+Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
+  if (message.containsKey('data')) {
+    // Handle data message
+    final dynamic data = message['data'];
+  }
+
+  if (message.containsKey('notification')) {
+    // Handle notification message
+    final dynamic notification = message['notification'];
+  }
+
+  // Or do other work.
+}
 
 class MyApp extends StatelessWidget {
-
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +90,49 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+  void initState() {
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+
+        showOverlayNotification((context) {
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            child: SafeArea(
+              child: ListTile(
+                leading: SizedBox.fromSize(
+                    size: const Size(40, 40),
+                    child: ClipOval(
+                        child: Container(
+                          color: Colors.black,
+                        ))),
+                title: Text(message['notification']['title']),
+                subtitle: Text(message['notification']['body']),
+                trailing: IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      OverlaySupportEntry.of(context).dismiss();
+                    }),
+              ),
+            ),
+          );
+        }, duration: Duration(milliseconds: 4000));
+
+        // _showItemDialog(message);
+      },
+      onBackgroundMessage: myBackgroundMessageHandler,
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+        // _navigateToItemDetail(message);
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+        // _navigateToItemDetail(message);
+      },
+    );
+  }
 
   void _aboutPage() {
     setState(() {});

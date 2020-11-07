@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import '';
 import 'package:assignment1_app/GameLocalizations.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -63,8 +64,12 @@ class _GamePageState extends State<GamePage> {
     db.once().then((DataSnapshot snapshot) {
       isOpponent = snapshot.value['GameAttributes']['tilesPlayed'] > 0;
       print("Tiles played so far" + snapshot.value['GameAttributes']['tilesPlayed'].toString());
+      // if (isOpponent == false) {
+      //   _resetGame();
+      // }
     });
 
+    // TODO: ON DIsconnect or someone hitting th abck button, reset Game attributes
     // Future.delayed(const Duration(milliseconds: 1000), ()
     // {
     //   if (!gameStarted) {
@@ -84,6 +89,7 @@ class _GamePageState extends State<GamePage> {
     // TODO: Add onDisconnect functionality
     // Map<> =
     db.onChildChanged.listen((event) {
+
       // print(event.snapshot.key.toString());
       if (event.snapshot.key == "GameAttributes") {
         Map<dynamic, dynamic> currentGameAttributes = event.snapshot.value;
@@ -96,10 +102,10 @@ class _GamePageState extends State<GamePage> {
       } else if (event.snapshot.key == "GameBoard") {
         // displayExOh = event.snapshot.value;
           _reloadBoard(event.snapshot.value);
-
+          _checkWinner();  // Should print win dialog for loser as well
       }
     });
-    _checkWinner();  // Should print win dialog for loser as well
+
   }
 
 
@@ -242,7 +248,7 @@ class _GamePageState extends State<GamePage> {
 // TODO: Improve image/graphic used for X and O marks
   void _tapped(int index) {
     // #Acknowledgements: Picsum Phots https://picsum.photos/
-    // setState(() {
+    setState(() {
       if(isOpponent == false && playerTurn == true && displayExOh[index] == blankTile) {  // FIX THIS
         print("PLAYER MOVE MADE");
         displayExOh[index] = ohTile;
@@ -266,7 +272,7 @@ class _GamePageState extends State<GamePage> {
 
       // playerTurn = !playerTurn; // Switches player each turn.
       _checkWinner();
-    // });
+    });
   }
 
   String _checkPlayer(String xo) {
