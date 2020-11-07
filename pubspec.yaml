@@ -41,6 +41,9 @@ dependencies:
   trotter: ^1.1.0
   url_launcher: ^5.7.2
   firebase_database: ^3.1.6
+  firebase_messaging: ^4.0.0+3
+#  firebase_messaging: ^7.0.3
+#  firebase_core: ^0.5.0+1
   firebase_core: ^0.4.4+3
 #  cloud_firestore: ^0.13.0+1     # Firebase
 

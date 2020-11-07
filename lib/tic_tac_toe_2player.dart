@@ -6,23 +6,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'GameLocalizations.dart';
 import '././game_resources/game_translator.dart' as translator;
+import 'firebase_realtime_db.dart';
+import '././game_resources/game_setup.dart' as setup;
 
 
+final db = FirebaseDatabase.instance.reference();
+
+//TODO: Access tiles as KVP to clean up board reference
 String blankTile = "https://picsum.photos/300/300.jpg";
+String ohTile = 'https://cdn.pixabay.com/photo/2013/07/12/16/22/alphabet-150778_1280.png';
+String exTile = 'https://cdn.pixabay.com/photo/2012/04/12/20/12/x-30465_1280.png';
 
 
 class GamePage extends StatefulWidget {
   @override
   _GamePageState createState() => _GamePageState();
-
 }
 
 
-// class _HomePageState extends State<HomePage> {
 class _GamePageState extends State<GamePage> {
 
-  bool ohTurn = true; // first player is O!
-  List<String> displayExOh = [
+  List<dynamic> displayExOh = [
     blankTile,
     blankTile,
     blankTile,
@@ -34,22 +38,117 @@ class _GamePageState extends State<GamePage> {
     blankTile,
   ];
 
-  var myTextStyle = TextStyle(color: Colors.white, fontSize: 30);
-  var myTextStyleLeader = TextStyle(color: Colors.white, fontSize: 20);
 
+  // bool gameStarted = db.child("GameAttributes").key(tilesPlayed) > 0;
+  bool gameStarted = false;
+  bool playerTurn = true;
   String currentLeader = "";
   int ohScore = 0;
   int exScore = 0;
   int filledBoxes = 0;
+  bool isOpponent;
+
+  String playerName = setup.getPlayer();
+  String opponentName = setup.getOpponent();
+  String playerWinning = setup.getPlayer() + " " + translator.translate("is winning!");
+  String opponentWinning = setup.getOpponent() + " " + translator.translate("is winning!");
+  String won = translator.translate(" won!");
+  String playAgain = translator.translate("Play Again!");
+  String draw = translator.translate("Draw");
+  String resetGame = translator.translate("Reset Game");
+
+
+  @override
+  void initState(){
+    db.once().then((DataSnapshot snapshot) {
+      isOpponent = snapshot.value['GameAttributes']['tilesPlayed'] > 0;
+      print("Tiles played so far" + snapshot.value['GameAttributes']['tilesPlayed'].toString());
+    });
+
+    // Future.delayed(const Duration(milliseconds: 1000), ()
+    // {
+    //   if (!gameStarted) {
+    //     _setPlayers();
+    //     _createBoard();
+    //     print(isOpponent);
+    //   } else {
+    //     isOpponent = true;
+    //     print(isOpponent);
+    //   }
+    //
+    // });
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: Add onDisconnect functionality
+    // Map<> =
+    db.onChildChanged.listen((event) {
+      // print(event.snapshot.key.toString());
+      if (event.snapshot.key == "GameAttributes") {
+        Map<dynamic, dynamic> currentGameAttributes = event.snapshot.value;
+        playerTurn = currentGameAttributes['isPlayerTurn'];
+        currentLeader = currentGameAttributes['currentLeader'];
+        ohScore = currentGameAttributes['playerScore'];
+        exScore = currentGameAttributes['opponentScore'];
+        filledBoxes = currentGameAttributes['tilesPlayed'];
+
+      } else if (event.snapshot.key == "GameBoard") {
+        // displayExOh = event.snapshot.value;
+          _reloadBoard(event.snapshot.value);
+
+      }
+    });
+    _checkWinner();  // Should print win dialog for loser as well
+  }
+
+
+  void _reloadBoard(List<dynamic> updatedBoard) {
+    setState(() {
+      displayExOh = updatedBoard;
+    });
+  }
+
+  void _setPlayers() {
+    db.child("PlayerAttributes").set({
+      'playerName': playerName,
+      'playerId': 'Player\'s FCM Messaging Token',
+      'opponentName': opponentName,
+      'opponentId': 'Opponent\'s FCM Messaging Token',
+    });
+    db.child("GameAttributes").update({
+      'playerScore': 0,
+      'isPlayerTurn': true,
+      'opponentScore': 0,
+      'tilesPlayed': 0,
+      'currentLeader': ""
+    });
+  }
+
+  void _createBoard() {
+    db.child("GameBoard").set(displayExOh);
+  }
+
+  void _updateStats(int p1Score, int p2Score, bool isTurn, int filledBoxes, String leader) {
+    db.child("GameAttributes").set({
+      'tilesPlayed': filledBoxes,
+      'playerScore': p1Score,
+      'opponentScore': p2Score,
+      'currentLeader': leader
+    });
+  }
+
+  // void _getSnapShot() {
+  //   db.once().then((DataSnapshot snapshot) {
+  //     print('Data : ${snapshot.value}');
+  //   });
+  // }
+
+  var myTextStyle = TextStyle(color: Colors.white, fontSize: 30);
+  var myTextStyleLeader = TextStyle(color: Colors.white, fontSize: 20);
 
   @override
   Widget build(BuildContext context) {
-
-    // Optional: AI if one player to select an open spot at random to play
-    // TODO: Move translated Strigs out of game into Translator and import
-    String playerO = translator.translate("Player O");
-    String playerX = translator.translate("Player X");
-    String resetGame = translator.translate("Reset Game");
 
     return Scaffold(
         backgroundColor: Colors.grey[800],
@@ -66,7 +165,7 @@ class _GamePageState extends State<GamePage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(playerO, style: myTextStyle, ),
+                            Text(playerName, style: myTextStyle, ),
                             Text(ohScore.toString(), style: myTextStyle, ),
                           ],
                         ),
@@ -76,7 +175,7 @@ class _GamePageState extends State<GamePage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(playerX, style: myTextStyle, ),
+                            Text(opponentName, style: myTextStyle, ),
                             Text(exScore.toString(), style: myTextStyle, ),
                           ],
                         ),
@@ -140,32 +239,42 @@ class _GamePageState extends State<GamePage> {
   }
 
 
-
+// TODO: Improve image/graphic used for X and O marks
   void _tapped(int index) {
     // #Acknowledgements: Picsum Phots https://picsum.photos/
-    setState(() {
-      if(ohTurn && displayExOh[index] == blankTile) {
-        displayExOh[index] = 'https://cdn.pixabay.com/photo/2013/07/12/16/22/alphabet-150778_1280.png';
+    // setState(() {
+      if(isOpponent == false && playerTurn == true && displayExOh[index] == blankTile) {  // FIX THIS
+        print("PLAYER MOVE MADE");
+        displayExOh[index] = ohTile;
+        db.child("GameBoard").set(displayExOh);
         filledBoxes += 1;
+        db.child("GameAttributes").update({
+          'tilesPlayed': filledBoxes,
+          'isPlayerTurn': false,
+        });
       }
-      else if (!ohTurn && displayExOh[index] == blankTile) {
-        displayExOh[index] = 'https://cdn.pixabay.com/photo/2012/04/12/20/12/x-30465_1280.png';
+      else if (isOpponent == true && playerTurn == false && displayExOh[index] == blankTile) {
+        print("OPPONENT MOVE MADE");
+        displayExOh[index] = exTile;
+        db.child("GameBoard").set(displayExOh);
         filledBoxes += 1;
+        db.child("GameAttributes").update({
+          'tilesPlayed': filledBoxes,
+          'isPlayerTurn': true,
+        });
       }
 
-      ohTurn = !ohTurn; // Switches player each turn.
+      // playerTurn = !playerTurn; // Switches player each turn.
       _checkWinner();
-    });
+    // });
   }
 
   String _checkPlayer(String xo) {
-    String playerO = translator.translate("Player O");
-    String playerX = translator.translate("Player X");
-    if(xo == 'O'){
-      return playerO;
+    if(xo == ohTile){
+      return playerName;
     }
     else{
-      return playerX;
+      return opponentName;
     }
   }
 
@@ -219,26 +328,17 @@ class _GamePageState extends State<GamePage> {
     else if(filledBoxes == 9) {
       _showDrawDialog();
     }
-
-
   }
 
   // Shows a dialog if there is a winner
   void _showWinDialog(String winner) {
-    String playerO = translator.translate("Player O");
-    String playerX = translator.translate("Player X");
-    String playerOWinning = translator.translate("Player O is winning!");
-    String playerXWinning = translator.translate("Player X is winning!");
-    String won = translator.translate(" won!");
-    String winnerPreface = translator.translate("Winner ");
-    String playAgain = translator.translate("Play Again!");
-
+    
     showDialog(
         barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(winnerPreface + winner + won),
+            title: Text(winner + won),
             actions: <Widget>[
               FlatButton (
                   child: Text(playAgain),
@@ -251,26 +351,39 @@ class _GamePageState extends State<GamePage> {
           );
         }
     );
-    if(winner == playerO) {
+    // winner should be allowed to make first move on next round
+    if(winner == playerName) {
       ohScore += 1;
+      db.child("GameAttributes").set({
+        'tilesPlayed': 0,
+        'playerScore': exScore,
+        'opponentScore': ohScore,
+        'isPlayerTurn': true,
+        'currentLeader': currentLeader
+      });
     }
-    else if(winner == playerX){
+    else if(winner == opponentName){
       exScore += 1;
+      db.child("GameAttributes").set({
+        'tilesPlayed': 0,
+        'playerScore': exScore,
+        'opponentScore': ohScore,
+        'isPlayerTurn': false,
+        'currentLeader': currentLeader
+      });
     }
 
     if (ohScore > exScore) {
-      currentLeader = playerOWinning;
+      currentLeader = playerWinning;
     }
     else {
-      currentLeader = playerXWinning;
+      currentLeader = opponentWinning;
     }
 
   }
 
   // Shows a dialog if there is a winner
   void _showDrawDialog() {
-    String playAgain = translator.translate("Play Again!");
-    String draw = translator.translate("Draw");
 
     showDialog(
         barrierDismissible: false,
@@ -283,6 +396,7 @@ class _GamePageState extends State<GamePage> {
                   child: Text(playAgain),
                   onPressed: (){
                     _clearBoard();
+                    _updateStats(exScore, ohScore, playerTurn, 0, currentLeader);
                     Navigator.of(context).pop();
                   }
               )
@@ -297,6 +411,7 @@ class _GamePageState extends State<GamePage> {
       for(int i = 0; i < displayExOh.length; i++) {
         displayExOh[i] = blankTile;
       }
+      db.child("GameBoard").set(displayExOh);
     });
 
     filledBoxes = 0;
@@ -309,6 +424,14 @@ class _GamePageState extends State<GamePage> {
     ohScore = 0;
     exScore = 0;
     filledBoxes = 0;
+    db.child("GameAttributes").set({
+      'tilesPlayed': 0,
+      'playerScore': 0,
+      'opponentScore': 0,
+      'isPlayerTurn': true,
+      'currentLeader': ""
+    });
+
   }
 }
 

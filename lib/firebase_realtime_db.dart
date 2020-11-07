@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+
 class FirebaseRealtimeDemoScreen extends StatelessWidget {
 
   final databaseReference = FirebaseDatabase.instance.reference();
@@ -71,34 +72,59 @@ class FirebaseRealtimeDemoScreen extends StatelessWidget {
   }
 
   void createData(){
-    databaseReference.child("flutterDevsTeam1").set({
-      'name': 'Deepak Nishad',
+    var playerName =
+    databaseReference.child("GameAttributes").set({
+      'turn': 'player',
       'description': 'Team Lead'
     });
-    databaseReference.child("flutterDevsTeam2").set({
-      'name': 'Yashwant Kumar',
-      'description': 'Senior Software Engineer'
+    // TODO: Save board as KVP within Firebase
+    String blankTile = "https://picsum.photos/300/300.jpg";
+
+    List<String> displayExOh = [
+      blankTile,
+      blankTile,
+      blankTile,
+      blankTile,
+      blankTile,
+      blankTile,
+      blankTile,
+      blankTile,
+      blankTile,
+    ];
+    databaseReference.child("GameBoard").set(displayExOh);
+    databaseReference.child("GameAttributes").set({
+      'playerOneScore': 0,
+      'playerTwoScore': 0,
+      'isplayerOneTurn': true,
+      'isPlayerTwoTurn': false,
+      'tilesPlayed': 0,
+      'currentLeader': ""
     });
-    databaseReference.child("flutterDevsTeam3").set({
-      'name': 'Akshay',
-      'description': 'Software Engineer'
-    });
-    databaseReference.child("flutterDevsTeam4").set({
-      'name': 'Aditya',
-      'description': 'Software Engineer'
-    });
-    databaseReference.child("flutterDevsTeam5").set({
-      'name': 'Shaiq',
-      'description': 'Associate Software Engineer'
-    });
-    databaseReference.child("flutterDevsTeam6").set({
-      'name': 'Mohit',
-      'description': 'Associate Software Engineer'
-    });
-    databaseReference.child("flutterDevsTeam7").set({
-      'name': 'Naveen',
-      'description': 'Associate Software Engineer'
-    });
+
+    // databaseReference.child("flutterDevsTeam2").set({
+    //   'name': 'Yashwant Kumar',
+    //   'description': 'Senior Software Engineer'
+    // });
+    // databaseReference.child("flutterDevsTeam3").set({
+    //   'name': 'Akshay',
+    //   'description': 'Software Engineer'
+    // });
+    // databaseReference.child("flutterDevsTeam4").set({
+    //   'name': 'Aditya',
+    //   'description': 'Software Engineer'
+    // });
+    // databaseReference.child("flutterDevsTeam5").set({
+    //   'name': 'Shaiq',
+    //   'description': 'Associate Software Engineer'
+    // });
+    // databaseReference.child("flutterDevsTeam6").set({
+    //   'name': 'Mohit',
+    //   'description': 'Associate Software Engineer'
+    // });
+    // databaseReference.child("flutterDevsTeam7").set({
+    //   'name': 'Naveen',
+    //   'description': 'Associate Software Engineer'
+    // });
 
   }
   void readData(){

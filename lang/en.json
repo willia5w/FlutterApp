@@ -1,11 +1,7 @@
 {
-  "Player O": "Player 0",
-  "Player X": "Player X",
-  "Player O is winning!": "Player O is winning!",
-  "Player X is winning!": "Player X is winning!",
+  "is winning!": "is winning!",
   "Reset Game": "Reset Game",
   "Play Again!": "Play Again!",
   " won!": " won!",
-  "Winner ": "Winner ",
   "Draw": "Draw"
 }

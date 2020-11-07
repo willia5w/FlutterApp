@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 
 void selectLanguage(BuildContext context) {
 
-  // TODO: Move from buttons to scrollable selector for supported languages
+
   Map<String, String> _supportedLangs = {'Spanish': 'es', 'English': 'en'};
   // var langs = _supportedLangs.keys.toList();
 
@@ -16,6 +16,7 @@ void selectLanguage(BuildContext context) {
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
       actions: [
+        // TODO: Move from buttons to scrollable selector for supported languages
         // ListView.builder(
         //     padding: const EdgeInsets.all(8),
         //     itemCount: _supportedLangs.length,
@@ -67,11 +68,7 @@ void selectLanguage(BuildContext context) {
 Map<String, String> localizedStrings;
 
 Future<bool> load(String languageCode) async {
-  // Load the language JSON file from the "lang" folder
   String jsonString = await rootBundle.loadString('lang/${languageCode}.json');
-
-  print('\nFileName for Translation: lang/${languageCode}.json\n');
-  print('\nFile Contents: ' + jsonString + '\n');
 
   Map<String, dynamic> jsonMap = json.decode(jsonString);
 
@@ -83,6 +80,5 @@ Future<bool> load(String languageCode) async {
 }
 
 String translate(String key) {
-  print(key + ", " + "Translation: " + localizedStrings[key]);
   return localizedStrings[key];
 }

@@ -1,13 +1,11 @@
 import 'package:assignment1_app/GameLocalizations.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:async' show Future;
 import 'dart:io';
 import 'dictionary_lookup.dart';
-import './tic_tac_toe.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'GameLocalizations.dart';
-import '././game_resources/game_translator.dart' as translator;
+import '././game_resources/game_setup.dart';
 
 import './firebase_realtime_db.dart';
 
@@ -33,12 +31,9 @@ class MyApp extends StatelessWidget {
           headline1: TextStyle(fontSize: 80.0, fontWeight: FontWeight.bold),
         ),
       ),
-      // List all of the app's supported locales here
       supportedLocales: [
         Locale('en'),
         Locale('es'),
-        // Locale('es', 'US'),
-        // Locale('en', 'US'),
       ],
       // These delegates make sure that the localization data for the proper language is loaded
       localizationsDelegates: [
@@ -56,12 +51,13 @@ class MyApp extends StatelessWidget {
             return supportedLocale;
           }
         }
-      // If the locale of the device is not supported, use the first from supportedLocales
+      // If the locale of the device is not supported, defaults to first from supportedLocales
         return supportedLocales.first;
       },
       home: MyHomePage(title: appName),
       routes: <String, WidgetBuilder>{
-        '/tic_tac_toe': (BuildContext context) => new GamePage(),
+        // '/tic_tac_toe': (BuildContext context) => new GamePage(),
+        '././game_resources/game_setup.dart': (BuildContext context) => new GameSetup(),
         '/dictionary_lookup': (BuildContext context) => new DictionaryRoute(),
         '/firebase_realtime_db': (BuildContext context) => new FirebaseRealtimeDemoScreen(),
       },
@@ -141,13 +137,11 @@ class _MyHomePageState extends State<MyHomePage> {
             child: RaisedButton(
               child: Text('Tic Tac Toe', style: TextStyle(fontSize: 24)),
               onPressed: (){
-                translator.selectLanguage(context);
-                // Future.delayed(Duration(seconds: 2), () {
+                Navigator.of(context).pushNamed('././game_resources/game_setup.dart');
+                // translator.selectLanguage(context);
+                // if (translator.localizedStrings.length > 0) {
                 //   Navigator.of(context).pushNamed('/tic_tac_toe');
-                // });
-                if (translator.localizedStrings.length > 0) {
-                  Navigator.of(context).pushNamed('/tic_tac_toe');
-                }
+                // }
               },
             ),
           ),

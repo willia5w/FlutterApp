@@ -24,9 +24,6 @@ class GameLocalizations {
     String jsonString =
     await rootBundle.loadString('lang/${locale.languageCode}.json');
 
-    print('\nFileName for Translation: lang/${locale.languageCode}.json\n');
-    print('\nFile Contents: ' + jsonString + '\n');
-
     Map<String, dynamic> jsonMap = json.decode(jsonString);
 
     _localizedStrings = jsonMap.map((key, value) {
