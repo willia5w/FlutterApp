@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'game_translator.dart' as translator;
@@ -13,41 +11,26 @@ class GameSetup extends StatefulWidget {
   _GameSetupState createState() => _GameSetupState();
 }
 
-final _text = TextEditingController();
-bool _validate = false;
-
 String getPlayer() {
   return playerUserName;
 }
-
-// May not need player token
-// Future<String> getPlayerToken() {
-//   return firebaseMessaging.getToken();
-// }
 
 String getOpponent() {
   return opponentUserName;
 }
 
-String getOpponentToken() {
-  return opponentToken;
-}
 
 String playerUserName = '';
 String opponentUserName = '';
-String opponentToken = 'elTgBPIDQVuSzW3ko2Uw6T:APA91bEuCja8WzJTyl-AWRS2UUdKfMqkjSEE7zfeuFZ70vgwSdR0q2aUI-9E8wdR95JCsKxMGCmJ6ZjHScVce8locBAhBkACAIQrdkKtUkgYHsgfJ6j6ptni0cnhqodE5y-rNFKoVPyr';
 
 final clearPlayerField = TextEditingController();
 final clearOpponentField = TextEditingController();
-final clearOpponentTokenField = TextEditingController();
 
 clearTextInput() {
   clearPlayerField.clear();
   clearOpponentField.clear();
-  clearOpponentTokenField.clear();
   playerUserName = '';
   opponentUserName = '';
-  opponentToken = '';
 }
 
 class _GameSetupState extends State<GameSetup> {
@@ -88,17 +71,6 @@ class _GameSetupState extends State<GameSetup> {
                 opponentUserName = val;
               },
             ),
-            TextField(
-              controller: clearOpponentTokenField,
-              obscureText: false,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Enter Your Opponent\'s Token:',
-              ),
-              onChanged: (val) {
-                opponentToken = val;
-              },
-            ),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               textDirection: TextDirection.rtl,
@@ -111,24 +83,53 @@ class _GameSetupState extends State<GameSetup> {
                 FlatButton(
                     child: Text('PLAY ON THE CLOUD'),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => tic_tac_toe_2Play.GamePage()),
-                      );
+                      if(playerUserName.length == 0 || opponentUserName.length == 0) {
+                        generateLengthError(context);
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => tic_tac_toe_2Play.GamePage()),
+                        );
+                      }
                     }),
                 FlatButton(
                     child: Text('PLAY LOCALLY'),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => tic_tac_toe.GamePage()),
-                      );
+                      if(playerUserName.length == 0 || opponentUserName.length == 0) {
+                        generateLengthError(context);
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => tic_tac_toe.GamePage()),
+                        );
+                      }
                     }),
               ],
             ),
           ],
         ));
   }
+}
+
+void generateLengthError(BuildContext context) {
+  var alertDialog = AlertDialog(
+    title: Text(
+        "Fields Cannot Be Blank!",
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
+    content: Text("Please Try Again",
+        style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+        textAlign: TextAlign.center),
+  );
+
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        Future.delayed(Duration(seconds: 2), () {
+          Navigator.of(context).pop(true);
+        });
+        return alertDialog;
+      });
 }

@@ -8,8 +8,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'GameLocalizations.dart';
 import '././game_resources/game_setup.dart';
 import '././game_resources/game_translator.dart' as translator;
-
-import './firebase_realtime_db.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:overlay_support/overlay_support.dart';
 
@@ -27,7 +25,6 @@ Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
     // Handle notification message
     final dynamic notification = message['notification'];
   }
-
   // Or do other work.
 }
 
@@ -75,7 +72,6 @@ class MyApp extends StatelessWidget {
         '/tic_tac_toe_2player': (BuildContext context) => new GamePage(),
         '././game_resources/game_setup.dart': (BuildContext context) => new GameSetup(),
         '/dictionary_lookup': (BuildContext context) => new DictionaryRoute(),
-        '/firebase_realtime_db': (BuildContext context) => new FirebaseRealtimeDemoScreen(),
       },
     );
   }
@@ -101,7 +97,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
         translator.load('en');
         acceptInvite(context);
-
 
         // Case where app is in the background
         showOverlayNotification((context) {
@@ -150,10 +145,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void acceptInvite(BuildContext context) {
     var alertDialog = AlertDialog(
-        title: Text("Error Generated!",
+        title: Text("Game Invite: Tic-Tac-Toe",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
-        content: Text("Please close the app.",
+        content: Text("Someone has invited you to play a game.",
             style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
             textAlign: TextAlign.center),
         actions: [
@@ -161,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: Alignment.center,
               child: FlatButton(
                   child: Text(
-                    "Accept Challenge",
+                    "Accept Challenge!",
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
                   ),
@@ -232,15 +227,6 @@ class _MyHomePageState extends State<MyHomePage> {
           Align(
             alignment: Alignment.center,
             child: RaisedButton(
-              child: Text('FireBase DB Demo', style: TextStyle(fontSize: 24)),
-              onPressed: () {
-                Navigator.of(context).pushNamed('/firebase_realtime_db');
-              },
-            ),
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: RaisedButton(
               child: Text('Tic Tac Toe', style: TextStyle(fontSize: 24)),
               onPressed: (){
                 Navigator.of(context).pushNamed('././game_resources/game_setup.dart');
@@ -253,7 +239,6 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Padding(
                 padding: EdgeInsets.only(bottom: 10.0),
                 child: Text(
-                // Update to get version code from Android Manifest
                 'Version 3.0',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 15, fontFamily: 'Lato'),

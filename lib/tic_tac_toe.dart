@@ -1,4 +1,4 @@
-
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import '././game_resources/game_translator.dart' as translator;
 
@@ -41,11 +41,14 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
 
-    // Optional: AI if one player to select an open spot at random to play
-    // TODO: Move translated Strigs out of game into Translator and import
     String playerO = translator.translate("Player O");
     String playerX = translator.translate("Player X");
     String resetGame = translator.translate("Reset Game");
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
     return Scaffold(
         backgroundColor: Colors.grey[800],

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'GameLocalizations.dart'; // Can be a more rubust implementation compared to game_translator
 import '././game_resources/game_translator.dart' as translator;
 import '././game_resources/game_setup.dart' as setup;
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -29,9 +28,7 @@ class _GamePageState extends State<GamePage> {
 
   String playerName = setup.getPlayer();
   String opponentName = setup.getOpponent();
-  // Future<String> playerToken = setup.getPlayerToken(); // Cast as a String to allow writiing to DB?
-  String playerToken = "1";
-  String opponentToken = setup.getOpponentToken();
+  String opponentToken;
   String playerWinning = setup.getPlayer() + " " + translator.translate("is winning!");
   String opponentWinning = setup.getOpponent() + " " + translator.translate("is winning!");
   String won = translator.translate(" won!");
@@ -54,8 +51,8 @@ class _GamePageState extends State<GamePage> {
       body: jsonEncode(
         <String, dynamic>{
           'notification': <String, dynamic>{
-            'body': 'this is a body',
-            'title': 'this is a title'
+            'body': 'Someone has invited you to play a game',
+            'title': 'Game Invite: Tic-Tac-Toe'
           },
           'priority': 'high',
           'data': <String, dynamic>{
@@ -63,7 +60,6 @@ class _GamePageState extends State<GamePage> {
             'id': '1',
             'status': 'done'
           },
-          // 'to': await firebaseMessaging.getToken(),
           'to': opponentToken,
         },
       ),
@@ -121,6 +117,7 @@ class _GamePageState extends State<GamePage> {
       if (isOpponent == false) {
         _setPlayers();
         _createBoard();
+        opponentToken = snapshot.value['Users'][opponentName];
       } else {
         playerName = snapshot.value['PlayerAttributes']['playerName'];
         opponentName = snapshot.value['PlayerAttributes']['opponentName'];
@@ -137,9 +134,7 @@ class _GamePageState extends State<GamePage> {
 
     db.child("PlayerAttributes").set({
       'playerName': playerName,
-      'playerId': playerToken,
-      'opponentName': opponentName,
-      'opponentId': opponentToken,
+      'opponentName': opponentName
     });
 
     db.child("GameAttributes").update({
@@ -208,17 +203,16 @@ class _GamePageState extends State<GamePage> {
     });
   }
 
-  // void _getSnapShot() {
-  //   db.once().then((DataSnapshot snapshot) {
-  //     print('Data : ${snapshot.value}');
-  //   });
-  // }
-
   var myTextStyle = TextStyle(color: Colors.white, fontSize: 30);
   var myTextStyleLeader = TextStyle(color: Colors.white, fontSize: 20);
 
   @override
   Widget build(BuildContext context) {
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
     return Scaffold(
         backgroundColor: Colors.grey[800],
@@ -332,11 +326,33 @@ class _GamePageState extends State<GamePage> {
           'tilesPlayed': filledBoxes,
           'isPlayerTurn': true,
         });
+      } else {  //  Show dialog to wait for other player to make a move
+        _showWaitDialog();
       }
 
-      // playerTurn = !playerTurn; // Switches player each turn.
       _checkWinner();
     });
+  }
+
+  void _showWaitDialog() {
+    var alertDialog = AlertDialog(
+      title: Text(
+          "Awaiting Opponent Move",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
+      content: Text("Please wait",
+          style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+          textAlign: TextAlign.center),
+    );
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          Future.delayed(Duration(seconds: 2), () {
+            Navigator.of(context).pop(true);
+          });
+          return alertDialog;
+        });
   }
 
   String _checkPlayer(String xo) {
@@ -449,7 +465,6 @@ class _GamePageState extends State<GamePage> {
     else {
       currentLeader = opponentWinning;
     }
-
   }
 
 
