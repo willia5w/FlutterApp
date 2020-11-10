@@ -134,14 +134,11 @@ class FirebaseRealtimeDemoScreen extends StatelessWidget {
   }
 
   void updateData(){
-    databaseReference.child('flutterDevsTeam1').update({
-      'description': 'CEO'
-    });
-    databaseReference.child('flutterDevsTeam2').update({
-      'description': 'Team Lead'
-    });
-    databaseReference.child('flutterDevsTeam3').update({
-      'description': 'Senior Software Engineer'
+    databaseReference.child("PlayerAttributes").update({
+      'playerName': 'shit',
+      'playerId': 'dOv34cF_SgqGFmviQyHEnc:APA91bGFLORO_xHH_nBwdM1Rb4dph-_C_ItotUULPCaF_cjS861t9OBCFWSpUGBjw2v0g6zhlvOypZx8_jrlN2fth-dj3VUCIk52aerzEYMOPfs_ZXhI-fuNh2TmpKkeu3cN7cP-c-C0',
+      'opponentName': 'fuck',
+      'opponentId': 'elTgBPIDQVuSzW3ko2Uw6T:APA91bEuCja8WzJTyl-AWRS2UUdKfMqkjSEE7zfeuFZ70vgwSdR0q2aUI-9E8wdR95JCsKxMGCmJ6ZjHScVce8locBAhBkACAIQrdkKtUkgYHsgfJ6j6ptni0cnhqodE5y-rNFKoVPyr',
     });
   }
 

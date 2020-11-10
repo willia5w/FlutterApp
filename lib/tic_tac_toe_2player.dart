@@ -1,17 +1,20 @@
 import 'package:firebase_database/firebase_database.dart';
-import '';
-import 'package:assignment1_app/GameLocalizations.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'GameLocalizations.dart';
+import 'GameLocalizations.dart'; // Can be a more rubust implementation compared to game_translator
 import '././game_resources/game_translator.dart' as translator;
-import 'firebase_realtime_db.dart';
 import '././game_resources/game_setup.dart' as setup;
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:http/http.dart' as http;
 
 
 final db = FirebaseDatabase.instance.reference();
+final String serverToken = 'AAAABklhXiY:APA91bEz7i5wvoOZebsrSjGx1GtRoZaQum7KC9ygCW4B7lpHUni4umrY2OpDOnjP2lhR1kskr7K_rInoCIfdNL3NCz7ajm3exnQtXxIszwTq60CNfclbbMlLmERno_2jJM2rt9VblMuz';
+final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+
+
 
 //TODO: Access tiles as KVP to clean up board reference
 String blankTile = "https://picsum.photos/300/300.jpg";
@@ -27,6 +30,72 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
 
+  String playerName = setup.getPlayer();
+  String opponentName = setup.getOpponent();
+  // Future<String> playerToken = setup.getPlayerToken(); // Cast as a String to allow writiing to DB?
+  String playerToken = "1";
+  String opponentToken = setup.getOpponentToken();
+  String playerWinning = setup.getPlayer() + " " + translator.translate("is winning!");
+  String opponentWinning = setup.getOpponent() + " " + translator.translate("is winning!");
+  String won = translator.translate(" won!");
+  String playAgain = translator.translate("Play Again!");
+  String draw = translator.translate("Draw");
+  String resetGame = translator.translate("Reset Game");
+
+
+  Future<Map<String, dynamic>> inviteOpponent() async {
+    await firebaseMessaging.requestNotificationPermissions(
+      const IosNotificationSettings(sound: true, badge: true, alert: true, provisional: false),
+    );
+
+    await http.post(
+      'https://fcm.googleapis.com/fcm/send',
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'key=$serverToken',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          'notification': <String, dynamic>{
+            'body': 'this is a body',
+            'title': 'this is a title'
+          },
+          'priority': 'high',
+          'data': <String, dynamic>{
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'id': '1',
+            'status': 'done'
+          },
+          // 'to': await firebaseMessaging.getToken(),
+          'to': opponentToken,
+        },
+      ),
+    );
+
+    final Completer<Map<String, dynamic>> completer =
+    Completer<Map<String, dynamic>>();
+
+    firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        completer.complete(message);
+      },
+    );
+
+    return completer.future;
+  }
+
+  List<dynamic> resetBoard = [
+    blankTile,
+    blankTile,
+    blankTile,
+    blankTile,
+    blankTile,
+    blankTile,
+    blankTile,
+    blankTile,
+    blankTile,
+  ];
+
   List<dynamic> displayExOh = [
     blankTile,
     blankTile,
@@ -39,9 +108,6 @@ class _GamePageState extends State<GamePage> {
     blankTile,
   ];
 
-
-  // bool gameStarted = db.child("GameAttributes").key(tilesPlayed) > 0;
-  bool gameStarted = false;
   bool playerTurn = true;
   String currentLeader = "";
   int ohScore = 0;
@@ -49,48 +115,66 @@ class _GamePageState extends State<GamePage> {
   int filledBoxes = 0;
   bool isOpponent;
 
-  String playerName = setup.getPlayer();
-  String opponentName = setup.getOpponent();
-  String playerWinning = setup.getPlayer() + " " + translator.translate("is winning!");
-  String opponentWinning = setup.getOpponent() + " " + translator.translate("is winning!");
-  String won = translator.translate(" won!");
-  String playAgain = translator.translate("Play Again!");
-  String draw = translator.translate("Draw");
-  String resetGame = translator.translate("Reset Game");
-
 
   @override
   void initState(){
     db.once().then((DataSnapshot snapshot) {
       isOpponent = snapshot.value['GameAttributes']['tilesPlayed'] > 0;
-      print("Tiles played so far" + snapshot.value['GameAttributes']['tilesPlayed'].toString());
-      // if (isOpponent == false) {
-      //   _resetGame();
-      // }
+
+      if (isOpponent == false) {
+        _setPlayers();
+        _createBoard();
+      } else {
+        playerName = snapshot.value['PlayerAttributes']['playerName'];
+        opponentName = snapshot.value['PlayerAttributes']['opponentName'];
+        playerTurn = false; // So opponent can make a move
+        filledBoxes = 1; // Opponent comes in when one tile played
+        List<dynamic> currentBoard = snapshot.value['GameBoard'];
+        _reloadBoard(currentBoard);
+      }
+    });
+  }
+
+  void _setPlayers() {
+    print("Setting PLAYERS!!!!!");
+
+    db.child("PlayerAttributes").set({
+      'playerName': playerName,
+      'playerId': playerToken,
+      'opponentName': opponentName,
+      'opponentId': opponentToken,
     });
 
-    // TODO: ON DIsconnect or someone hitting th abck button, reset Game attributes
-    // Future.delayed(const Duration(milliseconds: 1000), ()
-    // {
-    //   if (!gameStarted) {
-    //     _setPlayers();
-    //     _createBoard();
-    //     print(isOpponent);
-    //   } else {
-    //     isOpponent = true;
-    //     print(isOpponent);
-    //   }
-    //
-    // });
+    db.child("GameAttributes").update({
+      'playerScore': 0,
+      'isPlayerTurn': true,
+      'opponentScore': 0,
+      'tilesPlayed': 0,
+      'currentLeader': ""
+    });
+  }
+
+  void _createBoard() {
+    db.child("GameBoard").set(resetBoard);
   }
 
   @override
   void didChangeDependencies() {
-    // TODO: Add onDisconnect functionality
-    // Map<> =
-    db.onChildChanged.listen((event) {
 
-      // print(event.snapshot.key.toString());
+    // On Disconnect
+    db.child("GameAttributes").onDisconnect().update({
+      'playerOneScore': 0,
+      'playerTwoScore': 0,
+      'isplayerOneTurn': true,
+      'isPlayerTwoTurn': false,
+      'tilesPlayed': 0,
+      'currentLeader': ""
+    });
+
+    db.child("GameBoard").onDisconnect().set(resetBoard);
+
+    // On DB change
+    db.onChildChanged.listen((event) {
       if (event.snapshot.key == "GameAttributes") {
         Map<dynamic, dynamic> currentGameAttributes = event.snapshot.value;
         playerTurn = currentGameAttributes['isPlayerTurn'];
@@ -99,8 +183,11 @@ class _GamePageState extends State<GamePage> {
         exScore = currentGameAttributes['opponentScore'];
         filledBoxes = currentGameAttributes['tilesPlayed'];
 
+        if (filledBoxes == 1) {  // This is working
+          inviteOpponent();
+        }
+
       } else if (event.snapshot.key == "GameBoard") {
-        // displayExOh = event.snapshot.value;
           _reloadBoard(event.snapshot.value);
           _checkWinner();  // Should print win dialog for loser as well
       }
@@ -113,26 +200,6 @@ class _GamePageState extends State<GamePage> {
     setState(() {
       displayExOh = updatedBoard;
     });
-  }
-
-  void _setPlayers() {
-    db.child("PlayerAttributes").set({
-      'playerName': playerName,
-      'playerId': 'Player\'s FCM Messaging Token',
-      'opponentName': opponentName,
-      'opponentId': 'Opponent\'s FCM Messaging Token',
-    });
-    db.child("GameAttributes").update({
-      'playerScore': 0,
-      'isPlayerTurn': true,
-      'opponentScore': 0,
-      'tilesPlayed': 0,
-      'currentLeader': ""
-    });
-  }
-
-  void _createBoard() {
-    db.child("GameBoard").set(displayExOh);
   }
 
   void _updateStats(int p1Score, int p2Score, bool isTurn, int filledBoxes, String leader) {
@@ -245,7 +312,7 @@ class _GamePageState extends State<GamePage> {
   }
 
 
-// TODO: Improve image/graphic used for X and O marks
+  // TODO: Show Dialog for waiting until opponent makes a move
   void _tapped(int index) {
     // #Acknowledgements: Picsum Phots https://picsum.photos/
     setState(() {
@@ -388,9 +455,8 @@ class _GamePageState extends State<GamePage> {
 
   }
 
-  // Shows a dialog if there is a winner
-  void _showDrawDialog() {
 
+  void _showDrawDialog() {
     showDialog(
         barrierDismissible: false,
         context: context,

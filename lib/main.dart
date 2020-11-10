@@ -1,11 +1,13 @@
-import 'package:assignment1_app/GameLocalizations.dart';
+// import 'GameLocalizations.dart' as translator;
 import 'package:flutter/material.dart';
 import 'dart:async' show Future;
 import 'dart:io';
 import 'dictionary_lookup.dart';
+import 'tic_tac_toe_2player.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'GameLocalizations.dart';
 import '././game_resources/game_setup.dart';
+import '././game_resources/game_translator.dart' as translator;
 
 import './firebase_realtime_db.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -70,7 +72,7 @@ class MyApp extends StatelessWidget {
       },
       home: MyHomePage(title: appName),
       routes: <String, WidgetBuilder>{
-        // '/tic_tac_toe': (BuildContext context) => new GamePage(),
+        '/tic_tac_toe_2player': (BuildContext context) => new GamePage(),
         '././game_resources/game_setup.dart': (BuildContext context) => new GameSetup(),
         '/dictionary_lookup': (BuildContext context) => new DictionaryRoute(),
         '/firebase_realtime_db': (BuildContext context) => new FirebaseRealtimeDemoScreen(),
@@ -97,6 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
 
+        translator.load('en');
+        // TODO: Intercept with a dialog box
+        Navigator.of(context).pushNamed('/tic_tac_toe_2player');
+
+        // Case where app is in the background
         showOverlayNotification((context) {
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -126,12 +133,19 @@ class _MyHomePageState extends State<MyHomePage> {
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
         // _navigateToItemDetail(message);
+        translator.load('en');
+        Navigator.of(context).pushNamed('/tic_tac_toe_2player');
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
         // _navigateToItemDetail(message);
+        translator.load('en');
+        Navigator.of(context).pushNamed('/tic_tac_toe_2player');
       },
     );
+    _firebaseMessaging.getToken().then((token){
+      print("This device\'s token is: " + token.toString());
+    });
   }
 
   void _aboutPage() {
@@ -195,10 +209,6 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text('Tic Tac Toe', style: TextStyle(fontSize: 24)),
               onPressed: (){
                 Navigator.of(context).pushNamed('././game_resources/game_setup.dart');
-                // translator.selectLanguage(context);
-                // if (translator.localizedStrings.length > 0) {
-                //   Navigator.of(context).pushNamed('/tic_tac_toe');
-                // }
               },
             ),
           ),
