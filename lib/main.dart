@@ -100,8 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
         print("onMessage: $message");
 
         translator.load('en');
-        // TODO: Intercept with a dialog box
-        Navigator.of(context).pushNamed('/tic_tac_toe_2player');
+        acceptInvite(context);
+
 
         // Case where app is in the background
         showOverlayNotification((context) {
@@ -148,8 +148,43 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _aboutPage() {
-    setState(() {});
+  void acceptInvite(BuildContext context) {
+    var alertDialog = AlertDialog(
+        title: Text("Error Generated!",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20, fontFamily: 'Lato')),
+        content: Text("Please close the app.",
+            style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+            textAlign: TextAlign.center),
+        actions: [
+          Align(
+              alignment: Alignment.center,
+              child: FlatButton(
+                  child: Text(
+                    "Accept Challenge",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/tic_tac_toe_2player');
+                  })
+              // FlatButton(
+              //     child: Text(
+              //       "Flee!",
+              //       textAlign: TextAlign.center,
+              //       style: TextStyle(fontSize: 20, fontFamily: 'Lato'),
+              //     ),
+              //     onPressed: () {
+              //       exit(0);
+              //     })
+          ),
+        ]);
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alertDialog;
+        });
   }
 
   @override

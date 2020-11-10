@@ -1,15 +1,11 @@
-import 'package:firebase_database/firebase_database.dart';
-import 'package:assignment1_app/GameLocalizations.dart';
-import 'dart:async';
-import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'GameLocalizations.dart';
 import '././game_resources/game_translator.dart' as translator;
 
 
 String blankTile = "https://picsum.photos/300/300.jpg";
-
+String ohTile = 'https://cdn.pixabay.com/photo/2013/07/12/16/22/alphabet-150778_1280.png';
+String exTile = 'https://cdn.pixabay.com/photo/2012/04/12/20/12/x-30465_1280.png';
 
 class GamePage extends StatefulWidget {
   @override
@@ -145,11 +141,11 @@ class _GamePageState extends State<GamePage> {
     // #Acknowledgements: Picsum Phots https://picsum.photos/
     setState(() {
       if(ohTurn && displayExOh[index] == blankTile) {
-        displayExOh[index] = 'https://cdn.pixabay.com/photo/2013/07/12/16/22/alphabet-150778_1280.png';
+        displayExOh[index] = ohTile;
         filledBoxes += 1;
       }
       else if (!ohTurn && displayExOh[index] == blankTile) {
-        displayExOh[index] = 'https://cdn.pixabay.com/photo/2012/04/12/20/12/x-30465_1280.png';
+        displayExOh[index] = exTile;
         filledBoxes += 1;
       }
 
@@ -161,7 +157,7 @@ class _GamePageState extends State<GamePage> {
   String _checkPlayer(String xo) {
     String playerO = translator.translate("Player O");
     String playerX = translator.translate("Player X");
-    if(xo == 'O'){
+    if(xo == ohTile){
       return playerO;
     }
     else{

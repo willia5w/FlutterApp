@@ -14,9 +14,6 @@ final db = FirebaseDatabase.instance.reference();
 final String serverToken = 'AAAABklhXiY:APA91bEz7i5wvoOZebsrSjGx1GtRoZaQum7KC9ygCW4B7lpHUni4umrY2OpDOnjP2lhR1kskr7K_rInoCIfdNL3NCz7ajm3exnQtXxIszwTq60CNfclbbMlLmERno_2jJM2rt9VblMuz';
 final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
 
-
-
-//TODO: Access tiles as KVP to clean up board reference
 String blankTile = "https://picsum.photos/300/300.jpg";
 String ohTile = 'https://cdn.pixabay.com/photo/2013/07/12/16/22/alphabet-150778_1280.png';
 String exTile = 'https://cdn.pixabay.com/photo/2012/04/12/20/12/x-30465_1280.png';

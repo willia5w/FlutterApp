@@ -1,4 +1,9 @@
 {
+  "Player O is winning!": "Jugador O está ganando!",
+  "Player X is winning!": "Jugador X está ganando!",
+  "Winner ": "Winner ",
+  "Player X": "Jugador X",
+  "Player O": "Jugador O",
   "is winning!": "está ganando!",
   "Reset Game": "Reiniciar el juego",
   "Play Again!": "¡Juega de nuevo!",
